@@ -12,3 +12,4 @@ Before pushing code, run:
 ```bash
 npm run lint
 npm run format:check
+```
