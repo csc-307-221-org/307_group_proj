@@ -1,0 +1,23 @@
+{
+  "name": "backpack-organizer",
+  "private": true,
+   "workspaces": [
+        "packages/*"
+    ],
+  "scripts": {
+    "dev:frontend": "npm run dev -w /packages/frontend",
+    "dev:backend": "npm run dev -w /packages/backend",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.8.3"
+  }
+}
