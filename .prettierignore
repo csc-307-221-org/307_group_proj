@@ -4,3 +4,4 @@ build
 coverage
 .env
 package-lock.json
+.vscode
