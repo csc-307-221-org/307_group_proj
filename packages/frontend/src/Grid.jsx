@@ -7,7 +7,7 @@ function Grid() {
   return (
   <body>
     <div className="grid">
-        <h2 style={{paddingLeft: '150px'}}>x by x box</h2>
+        <h2 style={{paddingLeft: '150px',color: 'white'}}>x by x box</h2>
         <div style={{ display: 'flex',paddingLeft: '150px' }}>
          <input
             style={{ width: '50px', padding: '4px', fontSize: '14px' }}
@@ -17,7 +17,7 @@ function Grid() {
             value={rows}
             onChange={(e) => setRows(Number(e.target.value))}
             />
-            <h2 >x</h2>
+            <h2 style={{color: 'white'}}>X</h2>
             <input
                 style={{ width: '50px', padding: '4px', fontSize: '14px' }}
                 type="index"
