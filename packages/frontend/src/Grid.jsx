@@ -5,23 +5,28 @@ function Grid() {
     const total = rows * cols;
     const items = Array.from({ length: total });
   return (
+  <body>
     <div className="grid">
-        <h2>change rows</h2>
+        <h2 style={{paddingLeft: '150px'}}>x by x box</h2>
+        <div style={{ display: 'flex',paddingLeft: '150px' }}>
          <input
-        type="range"
-        min="1"
-        max="10"
-        value={rows}
-        onChange={(e) => setRows(Number(e.target.value))}
-    />
-    <h2>change columns</h2>
-    <input
-        type="range"
-        min="1"
-        max="10"
-        value={cols}
-        onChange={(e) => setCols(Number(e.target.value))}
-    />
+            style={{ width: '50px', padding: '4px', fontSize: '14px' }}
+            type="index"
+            min="1"
+            max="10"
+            value={rows}
+            onChange={(e) => setRows(Number(e.target.value))}
+            />
+            <h2 >x</h2>
+            <input
+                style={{ width: '50px', padding: '4px', fontSize: '14px' }}
+                type="index"
+                min="1"
+                max="10"
+                value={cols}
+                onChange={(e) => setCols(Number(e.target.value))}
+            />
+            </div>
       <div className="container">
         <div className="grid-box"
           style={{
@@ -37,6 +42,7 @@ function Grid() {
         </div>
       </div>
     </div>
+  </body>
   );
 }
 

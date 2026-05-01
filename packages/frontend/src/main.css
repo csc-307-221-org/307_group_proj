@@ -1,7 +1,10 @@
+
 body {
     margin: 0;
     padding: 0;
     height: 100vh;
+    background-image: url('your-small-image.png');
+    background-repeat: repeat;
 }
 
 .container {
