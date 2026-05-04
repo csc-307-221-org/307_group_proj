@@ -3,6 +3,10 @@ body {
     margin: 0;
     padding: 0;
     height: 100vh;
+    background-color: black;
+    background-image: url('C:/Users/zhard/307_group_proj/packages/frontend/src/Leon_S._Kennedy.png');
+    background-size: 1px 1px; 
+    background-repeat: repeat;
     
 }
 
