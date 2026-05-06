@@ -2,15 +2,17 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import "./main.css";
-import Grid from "./Grid.jsx"
+import Grid from "./Grid.jsx";
+import Presets from "./Presets.jsx";
 
 function MyApp() {
   return (
-    <Grid/>
-    
+    <>
+      <Grid />
+      <Presets />
+    </>
   );
 }
-
 
 // Create the container
 const container = document.getElementById("root");
