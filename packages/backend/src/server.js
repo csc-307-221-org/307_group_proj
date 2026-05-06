@@ -17,7 +17,9 @@ app.use(express.json());
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB :)")) // worked
-  .catch((err) => console.error("Damnit all... MongoDB connection error:", err)); // something broke
+  .catch((err) =>
+    console.error("Damnit all... MongoDB connection error:", err),
+  ); // something broke
 
 // test route so we know the server is working
 app.get("/", (req, res) => {

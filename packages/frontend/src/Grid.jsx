@@ -9,7 +9,7 @@ function Grid() {
 
   return (
     <div className="grid">
-      <h2 style={{ paddingLeft: "150px"}}>x by x box</h2>
+      <h2 style={{ paddingLeft: "150px" }}>x by x box</h2>
 
       <div style={{ display: "flex", paddingLeft: "150px" }}>
         <input

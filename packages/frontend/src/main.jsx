@@ -2,15 +2,11 @@
 import React from "react";
 import ReactDOMClient from "react-dom/client";
 import "./main.css";
-import Grid from "./Grid.jsx"
+import Grid from "./Grid.jsx";
 
 function MyApp() {
-  return (
-    <Grid/>
-    
-  );
+  return <Grid />;
 }
-
 
 // Create the container
 const container = document.getElementById("root");
