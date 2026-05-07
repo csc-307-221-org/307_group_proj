@@ -8,7 +8,7 @@ function Grid() {
   const safeRows = Number(rows) || 1;
   const safeCols = Number(cols) || 1;
 
-  const { maxSize } = useWindowScale(0.7);
+  const { maxSize } = useWindowScale(0.65);
 
   const cellSize = Math.min(100, maxSize / Math.max(safeRows, safeCols));
 
@@ -28,26 +28,35 @@ function Grid() {
 
   return (
     <div className="wrapper">
-      <h2>x by x box</h2>
+      <div className="top-bar">
+        <div className="top-left">
+          <div>Box Size</div>
 
-      <div className="controls">
-        <input
-          min="1"
-          max="10"
-          type="number"
-          value={rows}
-          onChange={(e) => handleChange(e, setRows)}
-        />
+          <div className="controls">
+            <input
+              min="1"
+              max="10"
+              type="number"
+              value={rows}
+              onChange={(e) => handleChange(e, setRows)}
+            />
 
-        <h2>X</h2>
+            <span>X</span>
 
-        <input
-          min="1"
-          max="10"
-          type="number"
-          value={cols}
-          onChange={(e) => handleChange(e, setCols)}
-        />
+            <input
+              min="1"
+              max="10"
+              type="number"
+              value={cols}
+              onChange={(e) => handleChange(e, setCols)}
+            />
+          </div>
+        </div>
+
+        <div className="top-right">
+          <div>Item Search</div>
+          <input type="text" placeholder="Search..." />
+        </div>
       </div>
 
       <div className="container">

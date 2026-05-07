@@ -5,11 +5,16 @@ const Presets = () => {
 
   return (
     <div className="presets">
+      <div className="presets-buttons">
+        <button>Save</button>
+        <button>Preset</button>
+      </div>
+
       <div className="presets-title">Presets</div>
 
       <div className="presets-list">
         {boxes.map((_, i) => (
-          <div key={i} className="preset-box">
+          <div className="preset-box" key={i}>
             {i + 1}
           </div>
         ))}
@@ -17,6 +22,5 @@ const Presets = () => {
     </div>
   );
 };
-
 
 export default Presets;
