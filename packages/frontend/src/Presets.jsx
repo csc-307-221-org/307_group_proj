@@ -18,5 +18,4 @@ const Presets = () => {
   );
 };
 
-
 export default Presets;
