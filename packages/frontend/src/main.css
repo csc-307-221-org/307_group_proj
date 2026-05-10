@@ -81,7 +81,7 @@ body{
   color:black;
 }
 
-/* PRESETS (LEFT FLOATING BOX) */
+/* PRESETS*/
 .presets{
   position:fixed;
   left:2vmin;
@@ -166,6 +166,7 @@ body{
   width:12vmin;
   height:3vmin;
 }
+/* ITEM BOX */
 .items-wrap{
   position:fixed;
   right:2vmin;
