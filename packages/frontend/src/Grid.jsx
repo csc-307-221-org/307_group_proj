@@ -45,7 +45,7 @@ function Grid() {
 
             <input
               min="1"
-              max="10"
+              max="`10"
               type="number"
               value={cols}
               onChange={(e) => handleChange(e, setCols)}

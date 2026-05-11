@@ -19,14 +19,6 @@ body{
   display:flex;
 }
 
-/* CENTER AREA (grid + right panel) */
-.layout{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:3vmin;
-}
 
 /* GRID WRAPPER */
 .wrapper{
@@ -166,6 +158,8 @@ body{
   width:12vmin;
   height:3vmin;
 }
+
+/* ITEMS (RIGHT FLOATING BOX) */
 .items-wrap{
   position:fixed;
   right:2vmin;
@@ -204,9 +198,7 @@ body{
 
 .items-panel{
   margin-top:3vmin;
-
   height:clamp(220px,35vmin,450px);
-
   background:#ddd;
   padding:clamp(20px,4vmin,50px) clamp(15px,3vmin,40px);
 
