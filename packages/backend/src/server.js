@@ -30,3 +30,23 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+app.get("/backpack", (req, res) => {
+  // Grab list of just backpack ID/Name for the presets list
+});
+
+app.get("/backpack/:id", (req, res) => {
+  // Grab the full backpack data to render on website
+});
+
+app.post("/backpack", (req, res) => {
+  // Create a new backpack
+});
+
+app.delete("/backpack/:id", (req, res) => {
+  // Delete a backpack
+});
+
+app.put("/backpack/:id", (req, res) => {
+  // Update a backpack
+});
