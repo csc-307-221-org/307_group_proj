@@ -38,6 +38,11 @@ const BackpackItemSchema = new mongoose.Schema(
       default: "",
     },
 
+    tags: {
+      type: [String],
+      default: [],
+    },
+
     shape: {
       type: [[Number]],
       required: true,
