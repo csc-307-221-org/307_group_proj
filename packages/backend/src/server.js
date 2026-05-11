@@ -3,6 +3,11 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import {
+  registerUser,
+  loginUser,
+  authenticateUser,
+} from "./auth.js";
 
 // this reads the .env file so we can use the database link
 dotenv.config();
@@ -24,6 +29,14 @@ mongoose
 // test route so we know the server is working
 app.get("/", (req, res) => {
   res.send("67 is our sacred number.");
+});
+
+app.post("/signup", registerUser);
+
+app.post("/login", loginUser);
+
+app.get("/protected", authenticateUser, (req, res) => {
+  res.send("You have access to protected data.");
 });
 
 // start the server
