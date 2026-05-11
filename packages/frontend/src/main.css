@@ -1,91 +1,236 @@
-body {
-  margin: 0;
-  height: 100vh;
-  background: black url("Leon_S._Kennedy.png") repeat;
-  background-size: 1px 1px;
+html,body,#root{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:auto;
+  --preset-w: clamp(110px,16vmin,180px);
+  --preset-gap: 8vmin;
 }
 
-.wrapper {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
+body{
+  background:black url("Leon_S._Kennedy.png") repeat;
+  background-size:1px;
 }
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+.app{
+  height:100%;
+  min-width:300px;
+  min-height:300px;
+  display:flex;
 }
 
-.controls input {
-  width: 50px;
-  padding: 4px;
-  text-align: center;
+/* CENTER AREA (grid + right panel) */
+.layout{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:3vmin;
 }
 
-.container {
-  width: 70vmin;
-  height: 70vmin;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+/* GRID WRAPPER */
+.wrapper{
+  height:100vh;
+  width:100vw;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  box-sizing:border-box;
 }
 
-.grid-box {
-  display: grid;
-  background: white;
-  border: 2px solid #333;
+/* CONTROLS */
+.controls{
+  display:flex;
+  gap:0.5vmin;
+  margin-bottom:0.5vmin;
+  width:100%;
+  height:50px;
+  align-self:flex-start;
 }
 
-.grid-item {
-  background: yellow;
-  border: 1px solid white;
-  box-sizing: border-box;
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.controls input{
+  width:6vmin;
+  min-width:40px;
+  max-width:80px;
+  padding:0.5vmin;
+  font-size:2vmin;
 }
 
-.presets {
-  position: fixed;
-  left: 2vmin;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16vmin;
-  height: 60vmin;
-  min-width: 110px;
-  min-height: 300px;
-  padding: 1vmin;
-  background: green;
-  display: flex;
-  flex-direction: column;
+/* GRID */
+.container{
+  width:65vmin;
+  height:65vmin;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-.presets-title {
-  color: white;
-  text-align: center;
-  margin-bottom: 1vmin;
+.grid-box{
+  display:grid;
+  background:white;
+  border:2px solid #333;
 }
 
-.presets-list {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1vmin;
-  overflow-y: auto;
+.grid-item{
+  background:yellow;
+  border:1px solid white;
+  display:grid;
+  place-items:center;
+  color:black;
 }
 
-.preset-box {
-  min-height: 80px;
-  background: white;
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* PRESETS*/
+.presets{
+  position:fixed;
+  left:2vmin;
+  top:50%;
+  transform:translateY(-50%);
+  width:var(--preset-w);
+  height:clamp(300px,60vmin,600px);
+  background:green;
+  padding:1vmin;
+  border-radius:8px;
+  display:flex;
+  flex-direction:column;
+  box-sizing:border-box;
+}
+
+.presets-buttons{
+  position:absolute;
+  top:-8vmin;
+  left:0;
+  width:100%;
+  display:flex;
+  gap:6px;
+}
+
+.presets-buttons button{
+  flex:1;
+  height:28px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.presets-title{
+  color:white;
+  text-align:center;
+  margin-bottom:1vmin;
+}
+
+.presets-list{
+  flex:1;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:1vmin;
+}
+
+.preset-box{
+  min-height:clamp(70px,12vmin,140px);
+  background:white;
+  color:black;
+  display:grid;
+  place-items:center;
+}
+
+.top-bar{
+  width:65vmin;
+  height:10vmin;
+  background:#ddd;
+  color:black;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:1vmin;
+  margin-bottom:2vmin;
+  box-sizing:border-box;
+}
+
+.top-left{
+  display:flex;
+  flex-direction:column;
+  gap:0.8vmin;
+  font-size:2vmin;
+}
+
+.top-right{
+  display:flex;
+  flex-direction:column;
+  gap:0.8vmin;
+  align-items:flex-end;
+}
+
+.top-right input{
+  width:12vmin;
+  height:3vmin;
+}
+/* ITEM BOX */
+.items-wrap{
+  position:fixed;
+  right:2vmin;
+  top:18vmin;
+
+  width:clamp(180px,26vmin,320px);
+
+  color:black;
+}
+
+.items-top{
+  height:clamp(45px,6vmin,70px);
+  background:#ddd;
+
+  display:flex;
+  align-items:center;
+  gap:1vmin;
+
+  padding:1vmin;
+  box-sizing:border-box;
+
+  font-size:clamp(18px,2.5vmin,32px);
+}
+
+.item-red{
+  width:clamp(50px,7vmin,100px);
+  height:clamp(15px,2vmin,28px);
+  background:#933;
+}
+
+.item-black{
+  width:clamp(20px,2.5vmin,35px);
+  height:clamp(20px,2.5vmin,35px);
+  background:black;
+}
+
+.items-panel{
+  margin-top:3vmin;
+
+  height:clamp(220px,35vmin,450px);
+
+  background:#ddd;
+  padding:clamp(20px,4vmin,50px) clamp(15px,3vmin,40px);
+
+  box-sizing:border-box;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.drop-box,
+.delete-box{
+  background:#666;
+  color:white;
+
+  padding:clamp(12px,1.5vmin,25px);
+
+  font-size:clamp(16px,2.2vmin,28px);
+
+  border:1px solid #333;
+}
+
+.items-line{
+  height:2px;
+  background:#933;
 }
