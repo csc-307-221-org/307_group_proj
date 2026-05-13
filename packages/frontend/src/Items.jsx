@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
+import Popout from "./Popout";
 
 function Items() {
+  const [showWhiteBox, setShowWhiteBox] = useState(false);
+
   return (
     <div className="items-wrap">
       <div className="items-top">
         <span>Items</span>
-        <div className="item-red"></div>
+
+        <button
+          type="button"
+          title="Press Me"
+          className="item-red"
+          onClick={() => setShowWhiteBox(true)}>add items
+        </button>
+
         <div className="item-black"></div>
       </div>
 
@@ -20,6 +30,10 @@ function Items() {
           Drag Item to<br />Delete here
         </div>
       </div>
+
+      {showWhiteBox && (
+        <Popout onClose={() => setShowWhiteBox(false)} />
+      )}
     </div>
   );
 }
