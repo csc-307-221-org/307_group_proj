@@ -20,10 +20,21 @@ function deleteItemById(id, ownerId) {
 }
 
 function updateItemById(id, ownerId, item) {
-  return itemModel.findOneAndUpdate({ _id: id, ownerId: ownerId }, item, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedItem = {
+    name: item.name,
+    description: item.description,
+    tags: item.tags,
+    shape: item.shape,
+  };
+
+  return itemModel.findOneAndUpdate(
+    { _id: id, ownerId: ownerId },
+    updatedItem,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 }
 
 export default {
