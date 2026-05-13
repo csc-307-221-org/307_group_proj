@@ -55,6 +55,11 @@ app.put("/backpack/:id", (req, res) => {
 app.get("/items", (req, res) => {
   const ownerId = req.query.ownerId;
 
+  if (!ownerId) {
+    res.status(400).send("ownerId is required.");
+    return;
+  }
+
   itemServices
     .getItems(ownerId)
     .then((result) => res.send({ items_list: result }))
@@ -62,8 +67,15 @@ app.get("/items", (req, res) => {
 });
 
 app.get("/items/:id", (req, res) => {
+  const ownerId = req.query.ownerId;
+
+  if (!ownerId) {
+    res.status(400).send("ownerId is required.");
+    return;
+  }
+
   itemServices
-    .findItemById(req.params.id)
+    .findItemById(req.params.id, ownerId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -75,6 +87,11 @@ app.get("/items/:id", (req, res) => {
 });
 
 app.post("/items", (req, res) => {
+  if (!req.body.ownerId) {
+    res.status(400).send("ownerId is required.");
+    return;
+  }
+
   itemServices
     .addItem(req.body)
     .then((result) => res.status(201).send(result))
@@ -82,8 +99,15 @@ app.post("/items", (req, res) => {
 });
 
 app.delete("/items/:id", (req, res) => {
+  const ownerId = req.query.ownerId;
+
+  if (!ownerId) {
+    res.status(400).send("ownerId is required.");
+    return;
+  }
+
   itemServices
-    .deleteItemById(req.params.id)
+    .deleteItemById(req.params.id, ownerId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -95,8 +119,15 @@ app.delete("/items/:id", (req, res) => {
 });
 
 app.put("/items/:id", (req, res) => {
+  const ownerId = req.query.ownerId;
+
+  if (!ownerId) {
+    res.status(400).send("ownerId is required.");
+    return;
+  }
+
   itemServices
-    .updateItemById(req.params.id, req.body)
+    .updateItemById(req.params.id, ownerId, req.body)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
