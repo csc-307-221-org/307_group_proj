@@ -3,6 +3,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 import {
   registerUser,
   loginUser,
@@ -17,6 +18,7 @@ const port = 8000;
 
 // lets us read JSON data from requests
 app.use(express.json());
+app.use(cors());
 
 // connect to our MongoDB database using the link in .env
 mongoose
