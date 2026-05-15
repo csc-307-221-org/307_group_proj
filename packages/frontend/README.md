@@ -1,16 +1,75 @@
-# React + Vite
+### Project Structure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- `packages/frontend`: React frontend
+- `packages/backend`: Express backend
 
-Currently, two official plugins are available:
+### Code Style
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+We use ESLint to check for code quality issues and Prettier to keep formatting consistent.
 
-## React Compiler
+Before pushing code, run:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run lint
+npm run format:check
+```
 
-## Expanding the ESLint configuration
+### Visual Studio Code Plugins
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Download ESLint and Prettier - Code formatter
+Create .vscode/settings.json in the root with the contents
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact"
+  ],
+
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ]
+}
+```
+## Authentication System
+
+The application uses JWT-based authentication with bcrypt password hashing.
+
+Features implemented:
+- User signup
+- User login
+- Password hashing using bcrypt
+- JWT token generation
+- Protected backend routes
+- Frontend login and signup pages
+- Authorization header verification
+
+---
+
+## Access Control Sequence Diagrams
+
+### Sign-Up Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: Enter username and password
+    Frontend->>Backend: POST /signup
+    Backend->>Backend: Hash password with bcrypt
+    Backend->>Database: Store username and hashed password
+    Database-->>Backend: User saved
+    Backend->>Backend: Generate JWT token
+    Backend-->>Frontend: Send token
+    Frontend->>Frontend: Save token in state
+    Frontend-->>User: Show signup success message
