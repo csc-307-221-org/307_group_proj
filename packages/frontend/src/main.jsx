@@ -48,16 +48,74 @@ function MyApp() {
       });
   }
 
-  return (
-    <BrowserRouter>
-      <p style={{ color: "white" }}>{message}</p>
+  function signupUser(creds) {
+    fetch("http://localhost:8000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(creds),
+    })
+      .then((response) => {
+        if (response.status === 201) {
+          response.json().then((payload) => {
+            setToken(payload.token);
+            setMessage(
+              `Signup successful for user: ${creds.username}`,
+            );
+          });
+        } else {
+          setMessage("Signup failed");
+        }
+      })
+      .catch((error) => {
+        setMessage(`Signup error: ${error}`);
+      });
+  }
 
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login handleSubmit={loginUser} />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  function testProtectedRoute() {
+    fetch("http://localhost:8000/protected", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        setMessage(data);
+      })
+      .catch((error) => {
+        setMessage(`Error: ${error}`);
+      });
+  }
+
+  return (
+  <BrowserRouter>
+    <p style={{ color: "white" }}>{message}</p>
+
+    <button onClick={testProtectedRoute}>
+      Test Protected Route
+    </button>
+
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+
+      <Route
+        path="/login"
+        element={<Login handleSubmit={loginUser} />}
+      />
+
+      <Route
+        path="/signup"
+        element={
+          <Login
+            handleSubmit={signupUser}
+            buttonLabel="Sign Up"
+          />
+        }
+      />
+    </Routes>
+  </BrowserRouter>
+);
 }
 
 const container = document.getElementById("root");

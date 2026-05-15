@@ -44,7 +44,11 @@ function Login(props) {
           onChange={handleChange}
         />
 
-        <input type="button" value="Log In" onClick={submitForm} />
+        <input
+          type="button"
+          value={props.buttonLabel || "Log In"}
+          onClick={submitForm}
+        />
       </form>
     </div>
   );
