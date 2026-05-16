@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Popout({ onClose }) {
+function Popout({ onClose, onSave }) {
   const rows = 3;
   const cols = 3;
 
@@ -8,11 +8,23 @@ function Popout({ onClose }) {
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
 
-  function handleCellClick(index) {
-    if (clickedCells.includes(index)) {
-      setClickedCells(clickedCells.filter((cell) => cell !== index));
+  function handleCellClick(row, col) {
+    const cell = { row: row, col: col };
+
+    const alreadyClicked = clickedCells.some(
+      (clickedCell) =>
+        clickedCell.row === row && clickedCell.col === col
+    );
+
+    if (alreadyClicked) {
+      setClickedCells(
+        clickedCells.filter(
+          (clickedCell) =>
+            clickedCell.row !== row || clickedCell.col !== col
+        )
+      );
     } else {
-      setClickedCells([...clickedCells, index]);
+      setClickedCells([...clickedCells, cell]);
     }
   }
 
@@ -23,7 +35,7 @@ function Popout({ onClose }) {
       cells: clickedCells,
     };
 
-    console.log(savedItem);
+    onSave(savedItem);
   }
 
   return (
@@ -43,18 +55,23 @@ function Popout({ onClose }) {
 
         <div className="middle-row">
           <div className="popout-grid">
-            {Array.from({ length: rows * cols }).map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                className={
-                  clickedCells.includes(index)
-                    ? "popout-cell selected"
-                    : "popout-cell"
-                }
-                onClick={() => handleCellClick(index)}
-              ></button>
-            ))}
+            {Array.from({ length: rows * cols }).map((_, index) => {
+              const row = Math.floor(index / cols);
+              const col = index % cols;
+
+              const selected = clickedCells.some(
+                (cell) => cell.row === row && cell.col === col
+              );
+
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={selected ? "popout-cell selected" : "popout-cell"}
+                  onClick={() => handleCellClick(row, col)}
+                ></button>
+              );
+            })}
           </div>
 
           <textarea
@@ -69,7 +86,6 @@ function Popout({ onClose }) {
           type="button"
           className="save-item-button"
           onClick={handleSave}
-          onClick={onClose}
         >
           Save
         </button>
