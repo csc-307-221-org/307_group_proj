@@ -115,6 +115,11 @@ const BackpackSchema = new mongoose.Schema(
       type: [PlacementSchema],
       default: [],
     },
+
+    weightsum: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     collection: "backpacks",
