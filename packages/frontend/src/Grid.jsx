@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useWindowScale from "./WindowScale";
 
 function Grid() {
@@ -11,6 +11,13 @@ function Grid() {
   const { maxSize } = useWindowScale(0.65);
 
   const cellSize = Math.min(100, maxSize / Math.max(safeRows, safeCols));
+
+  useEffect(() => {
+  document.documentElement.style.setProperty(
+    "--matrix-cell-size",
+    `${cellSize}px`
+    );
+  }, [cellSize]);
 
   const items = Array.from({ length: safeRows * safeCols });
 
@@ -43,7 +50,7 @@ function Grid() {
             <span>X</span>
             <input
               min="1"
-              max="10"
+              max="`10"
               type="number"
               value={cols}
               onChange={(e) => handleChange(e, setCols)}
