@@ -11,13 +11,17 @@ function Items() {
 
       <div className="items-panel">
         <div className="drop-box">
-          Where Item is<br />to drag
+          Where Item is
+          <br />
+          to drag
         </div>
 
         <div className="items-line"></div>
 
         <div className="delete-box">
-          Drag Item to<br />Delete here
+          Drag Item to
+          <br />
+          Delete here
         </div>
       </div>
     </div>
