@@ -12,16 +12,14 @@ function Popout({ onClose, onSave }) {
     const cell = { row: row, col: col };
 
     const alreadyClicked = clickedCells.some(
-      (clickedCell) =>
-        clickedCell.row === row && clickedCell.col === col
+      (clickedCell) => clickedCell.row === row && clickedCell.col === col,
     );
 
     if (alreadyClicked) {
       setClickedCells(
         clickedCells.filter(
-          (clickedCell) =>
-            clickedCell.row !== row || clickedCell.col !== col
-        )
+          (clickedCell) => clickedCell.row !== row || clickedCell.col !== col,
+        ),
       );
     } else {
       setClickedCells([...clickedCells, cell]);
@@ -60,7 +58,7 @@ function Popout({ onClose, onSave }) {
               const col = index % cols;
 
               const selected = clickedCells.some(
-                (cell) => cell.row === row && cell.col === col
+                (cell) => cell.row === row && cell.col === col,
               );
 
               return (
@@ -82,11 +80,7 @@ function Popout({ onClose, onSave }) {
           />
         </div>
 
-        <button
-          type="button"
-          className="save-item-button"
-          onClick={handleSave}
-        >
+        <button type="button" className="save-item-button" onClick={handleSave}>
           Save
         </button>
       </div>
