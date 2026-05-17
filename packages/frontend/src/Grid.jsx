@@ -40,9 +40,7 @@ function Grid() {
               value={rows}
               onChange={(e) => handleChange(e, setRows)}
             />
-
             <span>X</span>
-
             <input
               min="1"
               max="10"
