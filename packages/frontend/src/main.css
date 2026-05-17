@@ -25,18 +25,18 @@ body,
   /* Rounded edges */
   --roundness: 8px;
 }
-
+/* default solid color body */
+/*
 body {
   background: var(--color-bg);
 }
-
+*/
 /* getting rid of leon for now, ill add it back once i get a palette */
-/*
+
 body {
   background: rgb(0, 0, 0) url("Leon_S._Kennedy.png") repeat;
   background-size: 1px;
 }
-*/
 
 .app {
   height: 100%;
