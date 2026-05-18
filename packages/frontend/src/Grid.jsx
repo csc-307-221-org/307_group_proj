@@ -13,9 +13,9 @@ function Grid() {
   const cellSize = Math.min(100, maxSize / Math.max(safeRows, safeCols));
 
   useEffect(() => {
-  document.documentElement.style.setProperty(
-    "--matrix-cell-size",
-    `${cellSize}px`
+    document.documentElement.style.setProperty(
+      "--matrix-cell-size",
+      `${cellSize}px`,
     );
   }, [cellSize]);
 
@@ -47,9 +47,7 @@ function Grid() {
               value={rows}
               onChange={(e) => handleChange(e, setRows)}
             />
-
             <span>X</span>
-
             <input
               min="1"
               max="`10"

@@ -16,15 +16,16 @@ function Items() {
       <div className="items-top">
         <span>Items</span>
 
-        <button
-          type="button"
-          title="Press Me"
-          className="item-red"
-          onClick={() => setShowWhiteBox(true)}
-        >
-          add items
-        </button>
-
+        <div className="item-red">
+          <button
+            // type="button"
+            title="Press Me"
+            className="item-red"
+            onClick={() => setShowWhiteBox(true)}
+          >
+            Add Items
+          </button>
+        </div>
         <div className="item-black"></div>
       </div>
 
@@ -61,4 +62,3 @@ function Items() {
 }
 
 export default Items;
-

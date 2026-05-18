@@ -135,9 +135,7 @@ function SpawnedItem({ item }) {
           : undefined
       }
     >
-      <div className="spawned-shape-name">
-        {item.name || "Unnamed"}
-      </div>
+      <div className="spawned-shape-name">{item.name || "Unnamed"}</div>
 
       <div
         className="spawned-shape-grid"

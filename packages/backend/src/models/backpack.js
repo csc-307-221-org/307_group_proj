@@ -1,28 +1,5 @@
 import mongoose from "mongoose";
-
-function validateShapeMatrix(value) {
-  if (!Array.isArray(value) || value.length === 0) {
-    throw new Error("Item shape must be a non empty matrix.");
-  }
-
-  const columnLength = value[0].length;
-
-  if (columnLength === 0) {
-    throw new Error("Item shape rows must not be empty.");
-  }
-
-  for (const row of value) {
-    if (!Array.isArray(row) || row.length !== columnLength) {
-      throw new Error("Item shape must be a rectangular matrix.");
-    }
-
-    for (const cell of row) {
-      if (cell !== 0 && cell !== 1) {
-        throw new Error("Item shape cells must be either 0 or 1.");
-      }
-    }
-  }
-}
+import validateShapeMatrix from "../utils/validateShapeMatrix.js";
 
 const BackpackItemSchema = new mongoose.Schema(
   {
@@ -47,6 +24,10 @@ const BackpackItemSchema = new mongoose.Schema(
       type: [[Number]],
       required: true,
       validate: validateShapeMatrix,
+    },
+    weight: {
+      type: Number,
+      default: 0,
     },
   },
   { _id: true },
@@ -133,6 +114,11 @@ const BackpackSchema = new mongoose.Schema(
     placements: {
       type: [PlacementSchema],
       default: [],
+    },
+
+    weightsum: {
+      type: Number,
+      default: 0,
     },
   },
   {
