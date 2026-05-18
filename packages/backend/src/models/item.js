@@ -32,6 +32,10 @@ const ItemSchema = new mongoose.Schema(
       required: true,
       validate: validateShapeMatrix,
     },
+    weight: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     collection: "items",

@@ -25,6 +25,10 @@ const BackpackItemSchema = new mongoose.Schema(
       required: true,
       validate: validateShapeMatrix,
     },
+    weight: {
+      type: Number,
+      default: 0,
+    },
   },
   { _id: true },
 );
@@ -110,6 +114,11 @@ const BackpackSchema = new mongoose.Schema(
     placements: {
       type: [PlacementSchema],
       default: [],
+    },
+
+    weightsum: {
+      type: Number,
+      default: 0,
     },
   },
   {
