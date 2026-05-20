@@ -75,6 +75,23 @@ function Items() {
 
     loadItems();
   }, []);
+  async function handleDeleteItem(itemToDelete) {
+  setSavedItems((currentItems) =>
+    currentItems.filter((item) => item !== itemToDelete)
+  );
+
+  // Optional backend delete, only if your backend supports DELETE /items/:id
+  if (itemToDelete.id) {
+    try {
+      await fetch(`${API_URL}/items/${itemToDelete.id}`, {
+        method: "DELETE",
+      });
+    } catch (err) {
+      console.error("Could not delete item from backend:", err);
+    }
+  }
+}
+  
 
   return (
     <div className="items-wrap">
@@ -103,8 +120,12 @@ function Items() {
           </div>
 
           {savedItems.map((item, index) => (
-            <SpawnedItem key={index} item={item} />
-          ))}
+          <SpawnedItem
+            key={item.id || index}
+            item={item}
+            onDelete={handleDeleteItem}
+          />
+        ))}
         </div>
 
         <div className="items-line"></div>
@@ -120,6 +141,7 @@ function Items() {
         <Popout
           onClose={() => setShowWhiteBox(false)}
           onSave={handleSaveItem}
+          onDelete={handleDeleteItem}
         />
       )}
     </div>
