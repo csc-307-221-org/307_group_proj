@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./main.css";
 import Grid from "./Grid.jsx";
-import Presets from "./presets.jsx";
-import Items from "./items.jsx";
+import Presets from "./Presets.jsx";
+import Items from "./Items.jsx";
 
 function MyApp() {
   return (
