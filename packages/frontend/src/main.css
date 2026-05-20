@@ -1,70 +1,135 @@
-body {
+html,
+body,
+#root {
   margin: 0;
-  height: 100vh;
-  background: black url("Leon_S._Kennedy.png") repeat;
-  background-size: 1px 1px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  --preset-w: clamp(110px, 16vmin, 180px);
+  --preset-gap: 8vmin;
+
+  /* grabbed this from google,
+  declaring colors in root for use in body */
+  /* Primary Colors */
+  --color-primary: #353535;
+  --color-secondary: #bfbfbf;
+
+  /* Neutral / Background Colors */
+  --color-bg: #171311;
+  --color-text-1: #142d4c;
+  --color-text-2: black;
+
+  /* Accents */
+  --color-accent: #ed4646;
+
+  /* Rounded edges */
+  --roundness: 8px;
+}
+/* default solid color body */
+/*
+body {
+  background: var(--color-bg);
+}
+*/
+/* getting rid of leon for now, ill add it back once i get a palette */
+
+body {
+  background: rgb(0, 0, 0) url("Leon_S._Kennedy.png") repeat;
+  background-size: 1px;
 }
 
+.app {
+  height: 100%;
+  min-width: 300px;
+  min-height: 300px;
+  display: flex;
+}
+
+/* GRID WRAPPER */
 .wrapper {
   height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
+  box-sizing: border-box;
 }
 
+/* CONTROLS */
 .controls {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 0.5vmin;
+  margin-bottom: 0.5vmin;
+  width: 100%;
+  height: 24px;
+  align-self: flex-start;
 }
 
 .controls input {
-  width: 50px;
-  padding: 4px;
-  text-align: center;
+  width: 6vmin;
+  min-width: 40px;
+  max-width: 80px;
+  padding: 0.5vmin;
+  font-size: 2vmin;
 }
 
+/* GRID */
 .container {
-  width: 70vmin;
-  height: 70vmin;
+  width: 65vmin;
+  height: 65vmin;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 }
 
 .grid-box {
   display: grid;
-  background: white;
-  border: 2px solid #333;
+  background: var(--color-secondary);
+  border: 10px solid var(--color-primary);
+  border-radius: var(--roundness);
 }
 
 .grid-item {
-  background: yellow;
-  border: 1px solid white;
+  background: solid rgb(255, 255, 255);
+  border: 1px solid var(--color-primary);
+  display: grid;
+  place-items: center;
+  color: rgb(0, 0, 0);
   box-sizing: border-box;
-  color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
+/* PRESETS*/
 .presets {
   position: fixed;
   left: 2vmin;
   top: 50%;
   transform: translateY(-50%);
-  width: 16vmin;
-  height: 60vmin;
-  min-width: 110px;
-  min-height: 300px;
+  width: var(--preset-w);
+  height: clamp(300px, 60vmin, 600px);
+  background: var(--color-primary);
   padding: 1vmin;
-  background: green;
+  border-radius: var(--roundness);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+}
+
+.presets-buttons {
+  position: absolute;
+  top: -8vmin;
+  left: 0;
+  width: 100%;
+  display: flex;
+  gap: 6px;
+}
+
+.presets-buttons button {
+  flex: 1;
+  height: 28px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .presets-title {
@@ -75,17 +140,302 @@ body {
 
 .presets-list {
   flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1vmin;
-  overflow-y: auto;
 }
 
 .preset-box {
-  min-height: 80px;
-  background: white;
+  min-height: clamp(70px, 12vmin, 140px);
+  background: var(--color-secondary);
   color: black;
+  display: grid;
+  place-items: center;
+   position: relative; 
+  z-index: 10
+}
+
+/* TOP BAR */
+
+.top-bar {
+  width: 65vmin;
+  height: 12vmin;
+  background: var(--color-primary);
+  color: white;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1vmin;
+  margin-bottom: 2vmin;
+  box-sizing: border-box;
+}
+
+.top-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vmin;
+  font-size: 2vmin;
+}
+
+.top-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vmin;
+  align-items: flex-end;
+}
+
+.top-right input {
+  width: 12vmin;
+  height: 3vmin;
+}
+
+/* ITEMS (RIGHT FLOATING BOX) */
+/* ITEM BOX */
+.items-wrap {
+  position: fixed;
+  right: 2vmin;
+  top: 18vmin;
+
+  width: clamp(180px, 26vmin, 320px);
+
+  color: black;
+}
+
+.items-top {
+  height: clamp(45px, 6vmin, 70px);
+  background: #ddd;
+
+  display: flex;
   align-items: center;
+  gap: 1vmin;
+
+  padding: 1vmin;
+  box-sizing: border-box;
+  border-radius: var(--roundness);
+
+  font-size: clamp(18px, 2.5vmin, 32px);
+}
+
+.item-red button {
+  width: 80px;
+  height: 30px;
+  background: var(--color-accent);
+  cursor: pointer;
+  color: var(--color-text-2);
+  border-radius: var(--roundness);
+  border: 2px solid var(--color-primary);
+}
+
+.item-black {
+  width: clamp(20px, 2.5vmin, 35px);
+  height: clamp(20px, 2.5vmin, 35px);
+  background: black;
+}
+
+.items-panel {
+  margin-top: 3vmin;
+  height: clamp(220px, 35vmin, 450px);
+  background: var(--color-primary);
+  padding: clamp(20px, 4vmin, 50px) clamp(15px, 3vmin, 40px);
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: var(--roundness);
+}
+
+.drop-box,
+.delete-box {
+  background: var(--color-secondary);
+  color: var(--color-text-2);
+
+  padding: clamp(12px, 1.5vmin, 25px);
+
+  font-size: clamp(16px, 2.2vmin, 28px);
+
+  border: 1px solid #333;
+}
+
+.items-line {
+  height: 2px;
+  background: #933;
+}
+
+/* popout item box */
+
+.white-popup-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: fit-content;
+  height: fit-content;
+
+  background: pink;
+  border: 2px solid black;
+  border-radius: 12px;
+  z-index: 99999;
+
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.close-popup {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+
+  background: none;
+  border: none;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.popout-content {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.name-input {
+  width: 220px;
+  height: 35px;
+
+  font-size: 18px;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.middle-row {
+  display: flex;
+  gap: 30px;
+
+  margin-top: 30px;
+  align-items: flex-start;
+}
+
+.popout-grid {
+  width: 350px;
+  height: 350px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  border: 2px solid black;
+}
+
+.popout-cell {
+  background: white;
+  border: 1px solid black;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.popout-cell.selected {
+  background: red;
+}
+
+.description-input {
+  width: 350px;
+  height: 160px;
+
+  font-size: 18px;
+  padding: 8px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.save-item-button {
+  margin-top: 25px;
+
+  width: 100px;
+  height: 35px;
+
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* spawned item */
+.spawned-shape {
+  width: fit-content;
+  height: fit-content;
+  cursor: grab;
+  user-select: none;
+}
+
+.spawned-shape:active {
+  cursor: grabbing;
+}
+
+.spawned-shape-name {
+  background: black;
+  color: white;
+
+  padding: 4px 8px;
+  margin-bottom: 4px;
+
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+
+  border: 1px solid white;
+
+  width: fit-content;
+  max-width: 100%;
+
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.spawned-shape-grid {
+  display: grid;
+  width: fit-content;
+  height: fit-content;
+  border: none;
+}
+
+.spawned-shape-cell {
+  width: var(--matrix-cell-size, 60px);
+  height: var(--matrix-cell-size, 60px);
+  box-sizing: border-box;
+}
+
+.spawned-shape-cell.filled {
+  background: red;
+  border: 1px solid white;
+}
+
+.spawned-shape-cell.empty {
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+/* drop box */
+.drop-box {
+  background: var(--color-secondary);
+  color: var(--color-text-2);
+
+  min-height: 90px;
+  padding: clamp(12px, 1.5vmin, 25px);
+
+  font-size: clamp(16px, 2.2vmin, 28px);
+
+  border: 1px solid var(--color-primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.drop-box-label {
+  margin-bottom: 8px;
 }

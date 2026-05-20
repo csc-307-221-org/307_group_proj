@@ -9,15 +9,17 @@ import "./main.css";
 import Grid from "./Grid.jsx";
 import Presets from "./Presets.jsx";
 import Login from "./Login.jsx";
+import Items from "./Items.jsx";
 
 const INVALID_TOKEN = "INVALID_TOKEN";
 
 function HomePage() {
   return (
-    <>
-      <Grid />
+    <div className="app">
       <Presets />
-    </>
+      <Grid />
+      <Items />
+    </div>
   );
 }
 
@@ -122,3 +124,4 @@ const container = document.getElementById("root");
 const root = ReactDOMClient.createRoot(container);
 
 root.render(<MyApp />);
+ReactDOM.createRoot(document.getElementById("root")).render(<MyApp />);
