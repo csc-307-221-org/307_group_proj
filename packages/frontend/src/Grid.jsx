@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import useWindowScale from "./WindowScale";
+import useWindowScale from "./Windowscale";
 
 function Grid() {
   const [rows, setRows] = useState(4);

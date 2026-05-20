@@ -1,6 +1,7 @@
 // backend.js
 
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import itemServices from "./services/item-services.js";
@@ -13,6 +14,7 @@ const port = 8000;
 const TEMP_OWNER_ID = "676767676767676767676767";
 
 // lets us read JSON data from requests
+app.use(cors());
 app.use(express.json());
 
 // connect to our MongoDB database using the link in .env
@@ -31,30 +33,28 @@ app.get("/", (req, res) => {
 // gets all items from the database
 app.get("/items", async (req, res) => {
   try {
-    // get all items that belong to our temp user
     const items = await itemServices.getItems(TEMP_OWNER_ID);
-    // send items back
     res.json(items);
   } catch (err) {
-    res.send("Error getting items");
+    res.status(500).json({
+      error: err.message,
+    });
   }
 });
 
 // adds a new item to the database
 app.post("/items", async (req, res) => {
   try {
-    // create a new item using the request data
-    // attach the temp owner id
     const item = await itemServices.addItem({
       ...req.body,
       ownerId: TEMP_OWNER_ID,
     });
 
-    // send back the item we just created
-    res.json(item);
+    res.status(201).json(item);
   } catch (err) {
-    // something broke while adding item
-    res.send("Error adding item");
+    res.status(400).json({
+      error: err.message,
+    });
   }
 });
 

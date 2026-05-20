@@ -26,11 +26,21 @@ function Popout({ onClose, onSave }) {
     }
   }
 
+  function cellsToShape(cells, rows, cols) {
+    return Array.from({ length: rows }, (_, row) =>
+      Array.from({ length: cols }, (_, col) =>
+        cells.some((cell) => cell.row === row && cell.col === col) ? 1 : 0,
+      ),
+    );
+  }
+
   function handleSave() {
     const savedItem = {
       name: itemName,
       description: description,
-      cells: clickedCells,
+      tags: [],
+      weight: 0,
+      shape: cellsToShape(clickedCells, rows, cols),
     };
 
     onSave(savedItem);
