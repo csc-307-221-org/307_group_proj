@@ -38,3 +38,23 @@ Create .vscode/settings.json in the root with the contents
   ]
 }
 ```
+## Access Control Sequence Diagrams
+
+### Sign-Up Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: Enter username and password
+    Frontend->>Backend: POST /signup
+    Backend->>Backend: Hash password with bcrypt
+    Backend->>Database: Store username and hashed password
+    Database-->>Backend: User saved
+    Backend->>Backend: Generate JWT token
+    Backend-->>Frontend: Send token
+    Frontend->>Frontend: Save token in state
+    Frontend-->>User: Show signup success message
