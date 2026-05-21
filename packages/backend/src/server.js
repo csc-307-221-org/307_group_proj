@@ -13,7 +13,6 @@ dotenv.config();
 
 const app = express();
 const port = 8000;
-const TEMP_OWNER_ID = "676767676767676767676767";
 
 // lets us read JSON data from requests
 app.use(cors());
@@ -41,9 +40,9 @@ app.get("/protected", authenticateUser, (req, res) => {
 });
 
 // gets all items from the database
-app.get("/items", (req, res) => {
+app.get("/items", authenticateUser, (req, res) => {
   itemServices
-    .getItems(TEMP_OWNER_ID)
+    .getItems(req.user.userId)
     .then((result) => res.send({ items_list: result }))
     .catch((err) =>
       res.status(500).json({
@@ -53,9 +52,9 @@ app.get("/items", (req, res) => {
 });
 
 // gets one item from the database
-app.get("/items/:id", (req, res) => {
+app.get("/items/:id", authenticateUser, (req, res) => {
   itemServices
-    .findItemById(req.params.id, TEMP_OWNER_ID)
+    .findItemById(req.params.id, req.user.userId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -71,12 +70,12 @@ app.get("/items/:id", (req, res) => {
 });
 
 // adds a new item to the database
-app.post("/items", (req, res) => {
+app.post("/items", authenticateUser, (req, res) => {
   // create a new item using the request data
-  // attach the temp owner id
+  // attach the logged in user id
   const item = {
     ...req.body,
-    ownerId: TEMP_OWNER_ID,
+    ownerId: req.user.userId,
   };
 
   itemServices
@@ -90,9 +89,9 @@ app.post("/items", (req, res) => {
 });
 
 // deletes one item from the database
-app.delete("/items/:id", (req, res) => {
+app.delete("/items/:id", authenticateUser, (req, res) => {
   itemServices
-    .deleteItemById(req.params.id, TEMP_OWNER_ID)
+    .deleteItemById(req.params.id, req.user.userId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -108,9 +107,9 @@ app.delete("/items/:id", (req, res) => {
 });
 
 // updates one item in the database
-app.put("/items/:id", (req, res) => {
+app.put("/items/:id", authenticateUser, (req, res) => {
   itemServices
-    .updateItemById(req.params.id, TEMP_OWNER_ID, req.body)
+    .updateItemById(req.params.id, req.user.userId, req.body)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -126,9 +125,9 @@ app.put("/items/:id", (req, res) => {
 });
 
 // gets all backpacks from the database
-app.get("/backpack", (req, res) => {
+app.get("/backpack", authenticateUser, (req, res) => {
   backpackServices
-    .getBackpacks(TEMP_OWNER_ID)
+    .getBackpacks(req.user.userId)
     .then((result) => res.send({ backpacks_list: result }))
     .catch((err) =>
       res.status(500).json({
@@ -138,9 +137,9 @@ app.get("/backpack", (req, res) => {
 });
 
 // gets one backpack from the database
-app.get("/backpack/:id", (req, res) => {
+app.get("/backpack/:id", authenticateUser, (req, res) => {
   backpackServices
-    .findBackpackById(req.params.id, TEMP_OWNER_ID)
+    .findBackpackById(req.params.id, req.user.userId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -156,12 +155,12 @@ app.get("/backpack/:id", (req, res) => {
 });
 
 // adds a new backpack to the database
-app.post("/backpack", (req, res) => {
+app.post("/backpack", authenticateUser, (req, res) => {
   // create a new backpack using the request data
-  // attach the temp owner id
+  // attach the logged in user id
   const backpack = {
     ...req.body,
-    ownerId: TEMP_OWNER_ID,
+    ownerId: req.user.userId,
   };
 
   backpackServices
@@ -175,9 +174,9 @@ app.post("/backpack", (req, res) => {
 });
 
 // deletes one backpack from the database
-app.delete("/backpack/:id", (req, res) => {
+app.delete("/backpack/:id", authenticateUser, (req, res) => {
   backpackServices
-    .deleteBackpackById(req.params.id, TEMP_OWNER_ID)
+    .deleteBackpackById(req.params.id, req.user.userId)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
@@ -193,9 +192,9 @@ app.delete("/backpack/:id", (req, res) => {
 });
 
 // updates one backpack in the database
-app.put("/backpack/:id", (req, res) => {
+app.put("/backpack/:id", authenticateUser, (req, res) => {
   backpackServices
-    .updateBackpackById(req.params.id, TEMP_OWNER_ID, req.body)
+    .updateBackpackById(req.params.id, req.user.userId, req.body)
     .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");

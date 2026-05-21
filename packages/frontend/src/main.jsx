@@ -11,21 +11,27 @@ import Presets from "./Presets.jsx";
 import Login from "./Login.jsx";
 import Items from "./Items.jsx";
 
-const INVALID_TOKEN = "INVALID_TOKEN";
-
-function HomePage() {
+function HomePage({ token }) {
   return (
     <div className="app">
       <Presets />
       <Grid />
-      <Items />
+      <Items token={token} />
     </div>
   );
 }
 
 function MyApp() {
-  const [token, setToken] = useState(INVALID_TOKEN);
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || "";
+  });
+
   const [message, setMessage] = useState("");
+
+  function saveToken(newToken) {
+    setToken(newToken);
+    localStorage.setItem("token", newToken);
+  }
 
   function loginUser(creds) {
     fetch("http://localhost:8000/login", {
@@ -38,7 +44,7 @@ function MyApp() {
       .then((response) => {
         if (response.status === 200) {
           response.json().then((payload) => {
-            setToken(payload.token);
+            saveToken(payload.token);
             setMessage("Login successful; auth token saved");
           });
         } else {
@@ -61,10 +67,8 @@ function MyApp() {
       .then((response) => {
         if (response.status === 201) {
           response.json().then((payload) => {
-            setToken(payload.token);
-            setMessage(
-              `Signup successful for user: ${creds.username}`,
-            );
+            saveToken(payload.token);
+            setMessage(`Signup successful for user: ${creds.username}`);
           });
         } else {
           setMessage("Signup failed");
@@ -91,37 +95,26 @@ function MyApp() {
   }
 
   return (
-  <BrowserRouter>
-    <p style={{ color: "white" }}>{message}</p>
+    <BrowserRouter>
+      <p style={{ color: "white" }}>{message}</p>
 
-    <button onClick={testProtectedRoute}>
-      Test Protected Route
-    </button>
+      <button onClick={testProtectedRoute}>Test Protected Route</button>
 
-    <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Routes>
+        <Route path="/" element={<HomePage token={token} />} />
 
-      <Route
-        path="/login"
-        element={<Login handleSubmit={loginUser} />}
-      />
+        <Route path="/login" element={<Login handleSubmit={loginUser} />} />
 
-      <Route
-        path="/signup"
-        element={
-          <Login
-            handleSubmit={signupUser}
-            buttonLabel="Sign Up"
-          />
-        }
-      />
-    </Routes>
-  </BrowserRouter>
-);
+        <Route
+          path="/signup"
+          element={<Login handleSubmit={signupUser} buttonLabel="Sign Up" />}
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 const container = document.getElementById("root");
 const root = ReactDOMClient.createRoot(container);
 
 root.render(<MyApp />);
-ReactDOM.createRoot(document.getElementById("root")).render(<MyApp />);

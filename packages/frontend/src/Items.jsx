@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
-function Items() {
+function Items({ token }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [savedItems, setSavedItems] = useState([]);
 
@@ -30,11 +30,17 @@ function Items() {
   async function handleSaveItem(newItem) {
     console.log("Sending item to backend:", newItem);
 
+    if (!token) {
+      alert("Please log in before adding items.");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newItem),
       });
@@ -63,18 +69,33 @@ function Items() {
 
   useEffect(() => {
     async function loadItems() {
+      if (!token) {
+        setSavedItems([]);
+        return;
+      }
+
       try {
-        const response = await fetch(`${API_URL}/items`);
+        const response = await fetch(`${API_URL}/items`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         const data = await response.json();
 
-        setSavedItems(data.map(itemFromBackendToFrontend));
+        if (!response.ok) {
+          console.error("Could not load items.", data);
+          return;
+        }
+
+        setSavedItems(data.items_list.map(itemFromBackendToFrontend));
       } catch (err) {
         console.error("Could not load items.", err);
       }
     }
 
     loadItems();
-  }, []);
+  }, [token]);
 
   return (
     <div className="items-wrap">

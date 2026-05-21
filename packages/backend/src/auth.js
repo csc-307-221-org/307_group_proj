@@ -21,8 +21,8 @@ export function registerUser(req, res) {
               hashedPassword: hashedPassword,
             });
 
-            newUser.save().then(() => {
-              generateAccessToken(username).then((token) => {
+            newUser.save().then((savedUser) => {
+              generateAccessToken(savedUser).then((token) => {
                 res.status(201).send({ token: token });
               });
             });
@@ -43,7 +43,7 @@ export function loginUser(req, res) {
         .compare(pwd, retrievedUser.hashedPassword)
         .then((matched) => {
           if (matched) {
-            generateAccessToken(username).then((token) => {
+            generateAccessToken(retrievedUser).then((token) => {
               res.status(200).send({ token: token });
             });
           } else {
@@ -67,6 +67,7 @@ export function authenticateUser(req, res, next) {
   } else {
     jwt.verify(token, process.env.TOKEN_SECRET, (error, decoded) => {
       if (decoded) {
+        req.user = decoded;
         next();
       } else {
         console.log("JWT error:", error);
@@ -76,10 +77,13 @@ export function authenticateUser(req, res, next) {
   }
 }
 
-function generateAccessToken(username) {
+function generateAccessToken(user) {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      { username: username },
+      {
+        userId: user._id,
+        username: user.username,
+      },
       process.env.TOKEN_SECRET,
       { expiresIn: "1d" },
       (error, token) => {

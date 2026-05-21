@@ -67,10 +67,10 @@ function Login(props) {
     }
   }
 
-function submitForm() {
-  props.handleSubmit(creds);
-  setCreds({ username: "", pwd: "" });
-}
+  function submitForm() {
+    props.handleSubmit(creds);
+    setCreds({ username: "", pwd: "" });
+  }
 }
 
 export default Login;
