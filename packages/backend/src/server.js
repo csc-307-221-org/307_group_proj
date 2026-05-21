@@ -4,6 +4,11 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import {
+  registerUser,
+  loginUser,
+  authenticateUser,
+} from "./auth.js";
 import itemServices from "./services/item-services.js";
 
 // this reads the .env file so we can use the database link
@@ -30,6 +35,12 @@ app.get("/", (req, res) => {
   res.send("67 is our sacred number.");
 });
 
+app.post("/signup", registerUser);
+
+app.post("/login", loginUser);
+
+app.get("/protected", authenticateUser, (req, res) => {
+  res.send("You have access to protected data.");
 // gets all items from the database
 app.get("/items", async (req, res) => {
   try {
