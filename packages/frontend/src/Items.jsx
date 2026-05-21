@@ -6,7 +6,7 @@ function Items({ token }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [savedItems, setSavedItems] = useState([]);
 
-  const API_URL = "http://localhost:8000"; // Change this later to whatever the backend URL is when we "deploy"
+  const API_URL = "http://localhost:8000";
 
   function shapeToCells(shape) {
     if (!Array.isArray(shape)) {
@@ -16,7 +16,7 @@ function Items({ token }) {
     return shape.flatMap((rowArray, row) =>
       rowArray
         .map((value, col) => (value === 1 ? { row, col } : null))
-        .filter(Boolean),
+        .filter(Boolean)
     );
   }
 
@@ -67,6 +67,25 @@ function Items({ token }) {
     }
   }
 
+  async function handleDeleteItem(itemToDelete) {
+    setSavedItems((currentItems) =>
+      currentItems.filter((item) => item !== itemToDelete)
+    );
+
+    if (itemToDelete.id) {
+      try {
+        await fetch(`${API_URL}/items/${itemToDelete.id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (err) {
+        console.error("Could not delete item from backend:", err);
+      }
+    }
+  }
+
   useEffect(() => {
     async function loadItems() {
       if (!token) {
@@ -95,24 +114,6 @@ function Items({ token }) {
     }
 
     loadItems();
-  }, []);
-  async function handleDeleteItem(itemToDelete) {
-  setSavedItems((currentItems) =>
-    currentItems.filter((item) => item !== itemToDelete)
-  );
-
-  // Optional backend delete, only if your backend supports DELETE /items/:id
-  if (itemToDelete.id) {
-    try {
-      await fetch(`${API_URL}/items/${itemToDelete.id}`, {
-        method: "DELETE",
-      });
-    } catch (err) {
-      console.error("Could not delete item from backend:", err);
-    }
-  }
-}
-  
   }, [token]);
 
   return (
@@ -122,7 +123,6 @@ function Items({ token }) {
 
         <div className="item-red">
           <button
-            // type="button"
             title="Press Me"
             className="item-red"
             onClick={() => setShowWhiteBox(true)}
@@ -130,6 +130,7 @@ function Items({ token }) {
             Add Items
           </button>
         </div>
+
         <div className="item-black"></div>
       </div>
 
@@ -142,12 +143,12 @@ function Items({ token }) {
           </div>
 
           {savedItems.map((item, index) => (
-          <SpawnedItem
-            key={item.id || index}
-            item={item}
-            onDelete={handleDeleteItem}
-          />
-        ))}
+            <SpawnedItem
+              key={item.id || index}
+              item={item}
+              onDelete={handleDeleteItem}
+            />
+          ))}
         </div>
 
         <div className="items-line"></div>
