@@ -4,11 +4,7 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import {
-  registerUser,
-  loginUser,
-  authenticateUser,
-} from "./auth.js";
+import { registerUser, loginUser, authenticateUser } from "./auth.js";
 import itemServices from "./services/item-services.js";
 import backpackServices from "./services/backpack-services.js";
 
@@ -42,6 +38,8 @@ app.post("/login", loginUser);
 
 app.get("/protected", authenticateUser, (req, res) => {
   res.send("You have access to protected data.");
+});
+
 // gets all items from the database
 app.get("/items", (req, res) => {
   itemServices
