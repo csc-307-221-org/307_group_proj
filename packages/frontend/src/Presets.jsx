@@ -1,4 +1,3 @@
-
 const Presets = () => {
   const boxes = Array.from({ length: 20 });
 
