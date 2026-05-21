@@ -1,11 +1,10 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./main.css";
 import Grid from "./Grid.jsx";
 import Presets from "./Presets.jsx";
 import Items from "./Items.jsx";
 
-function MyApp() {
+export default function MyApp() {
   return (
     <div className="app">
       <Presets />

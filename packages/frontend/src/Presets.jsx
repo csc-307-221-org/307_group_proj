@@ -1,4 +1,3 @@
-import React from "react";
 
 const Presets = () => {
   const boxes = Array.from({ length: 20 });

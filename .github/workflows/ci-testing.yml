@@ -1,0 +1,36 @@
+name: CI Testing
+
+on:
+  push:
+    branches: [main, ci-cd-setup]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 24
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run format:check
+
+      - run: npm run test
+
+      - run: npm run lint -w backend
+
+      - run: npm run test -w backend
+
+      - run: npm run lint -w frontend
+
+      - run: npm run test -w frontend
+
+      - run: npm run build -w frontend

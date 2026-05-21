@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function Popout({ onClose, onSave }) {
   const rows = 3;
