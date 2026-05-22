@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-function SpawnedItem({ item, onDelete }) {
+function SpawnedItem({
+  item,
+  onDelete,
+  onPlaceItem,
+  onRemoveItemFromMatrix,
+  onCanPlaceItem,
+}) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [moved, setMoved] = useState(false);
@@ -46,6 +52,10 @@ function SpawnedItem({ item, onDelete }) {
   function startDrag(e) {
     e.preventDefault();
 
+    if (onRemoveItemFromMatrix) {
+      onRemoveItemFromMatrix(item);
+    }
+
     const itemElement = e.currentTarget;
     const startRect = itemElement.getBoundingClientRect();
 
@@ -62,9 +72,12 @@ function SpawnedItem({ item, onDelete }) {
       });
     }
 
-    function stopDrag(upEvent) {
-      setDragging(false);
+    function cleanup() {
+      window.removeEventListener("mousemove", moveItem);
+      window.removeEventListener("mouseup", stopDrag);
+    }
 
+    function stopDrag(upEvent) {
       const finalX = upEvent.clientX - offsetX;
       const finalY = upEvent.clientY - offsetY;
 
@@ -81,8 +94,19 @@ function SpawnedItem({ item, onDelete }) {
         deleteBox &&
         isTouching(itemRect, deleteBox.getBoundingClientRect())
       ) {
-        onDelete(item);
         cleanup();
+        setDragging(false);
+
+        if (onRemoveItemFromMatrix) {
+          onRemoveItemFromMatrix(item);
+        }
+
+        setTimeout(() => {
+          if (onDelete) {
+            onDelete(item);
+          }
+        }, 0);
+
         return;
       }
 
@@ -90,11 +114,20 @@ function SpawnedItem({ item, onDelete }) {
 
       if (!gridBox) {
         setPos({ x: finalX, y: finalY });
+        setDragging(false);
         cleanup();
         return;
       }
 
       const gridRect = gridBox.getBoundingClientRect();
+
+      if (!isTouching(itemRect, gridRect)) {
+        setPos({ x: finalX, y: finalY });
+        setDragging(false);
+        cleanup();
+        return;
+      }
+
       const gridStyles = getComputedStyle(gridBox);
       const cellSize = getCellSize();
       const gridSize = getGridSize(gridBox);
@@ -123,20 +156,33 @@ function SpawnedItem({ item, onDelete }) {
         col + shapeCols <= gridSize.cols;
 
       if (fits) {
-        setPos({
-          x: gridStartX + col * cellSize,
-          y: gridStartY + row * cellSize - nameHeight - nameMargin,
-        });
+        const spotIsOpen = onCanPlaceItem
+          ? onCanPlaceItem(item, row, col)
+          : true;
+
+        if (spotIsOpen) {
+          setPos({
+            x: gridStartX + col * cellSize,
+            y: gridStartY + row * cellSize - nameHeight - nameMargin,
+          });
+
+          if (onPlaceItem) {
+            onPlaceItem(item, row, col);
+          }
+        } else {
+          alert("That spot already has an item.");
+
+          setPos({
+            x: finalX,
+            y: finalY,
+          });
+        }
       } else {
         setPos({ x: finalX, y: finalY });
       }
 
+      setDragging(false);
       cleanup();
-    }
-
-    function cleanup() {
-      window.removeEventListener("mousemove", moveItem);
-      window.removeEventListener("mouseup", stopDrag);
     }
 
     window.addEventListener("mousemove", moveItem);
@@ -156,6 +202,7 @@ function SpawnedItem({ item, onDelete }) {
               margin: 0,
               zIndex: 99999,
               cursor: dragging ? "grabbing" : "grab",
+              transform: "scale(1)",
             }
           : undefined
       }

@@ -1,6 +1,4 @@
-// src/main.jsx
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -12,11 +10,146 @@ import Login from "./Login.jsx";
 import Items from "./Items.jsx";
 
 function HomePage({ token }) {
+  const [rows, setRows] = useState(4);
+  const [cols, setCols] = useState(4);
+
+  const [placedItems, setPlacedItems] = useState(() =>
+    Array.from({ length: 4 }, () => Array(4).fill(null))
+  );
+
+  useEffect(() => {
+    setPlacedItems((current) =>
+      Array.from({ length: rows }, (_, row) =>
+        Array.from({ length: cols }, (_, col) => current[row]?.[col] || null)
+      )
+    );
+  }, [rows, cols]);
+
+  function sameItem(a, b) {
+    if (!a || !b) return false;
+
+    if (a.id !== undefined && a.id !== null && b.id !== undefined && b.id !== null) {
+      return a.id === b.id;
+    }
+
+    return a === b;
+  }
+
+  function getShapeInfo(item) {
+    const cells = item.cells || [];
+
+    const minRow = cells.length ? Math.min(...cells.map((cell) => cell.row)) : 0;
+    const maxRow = cells.length ? Math.max(...cells.map((cell) => cell.row)) : 0;
+    const minCol = cells.length ? Math.min(...cells.map((cell) => cell.col)) : 0;
+    const maxCol = cells.length ? Math.max(...cells.map((cell) => cell.col)) : 0;
+
+    return {
+      cells,
+      minRow,
+      minCol,
+      itemSize: `${maxRow - minRow + 1}x${maxCol - minCol + 1}`,
+    };
+  }
+
+  function canPlaceItem(item, startRow, startCol) {
+    const { cells, minRow, minCol } = getShapeInfo(item);
+
+    return cells.every((cell) => {
+      const gridRow = startRow + (cell.row - minRow);
+      const gridCol = startCol + (cell.col - minCol);
+
+      const spot = placedItems[gridRow]?.[gridCol];
+
+      if (spot === undefined) return false;
+      if (spot === null) return true;
+
+      return sameItem(spot.fullItem, item);
+    });
+  }
+
+  function handlePlaceItem(item, startRow, startCol) {
+    setPlacedItems((current) => {
+      const { cells, minRow, minCol, itemSize } = getShapeInfo(item);
+
+      const blocked = cells.some((cell) => {
+        const gridRow = startRow + (cell.row - minRow);
+        const gridCol = startCol + (cell.col - minCol);
+
+        const spot = current[gridRow]?.[gridCol];
+
+        if (spot === undefined) return true;
+        if (spot === null) return false;
+
+        return !sameItem(spot.fullItem, item);
+      });
+
+      if (blocked) {
+        alert("There is already an item there.");
+        return current;
+      }
+
+      const updated = current.map((row) =>
+        row.map((spot) => {
+          if (spot && sameItem(spot.fullItem, item)) {
+            return null;
+          }
+
+          return spot;
+        })
+      );
+
+      cells.forEach((cell) => {
+        const gridRow = startRow + (cell.row - minRow);
+        const gridCol = startCol + (cell.col - minCol);
+
+        updated[gridRow][gridCol] = {
+          name: item.name,
+          description: item.description,
+          itemSize,
+          itemPiece: {
+            row: cell.row - minRow,
+            col: cell.col - minCol,
+          },
+          fullItem: item,
+        };
+      });
+
+      return updated;
+    });
+  }
+
+  function handleRemoveItemFromMatrix(item) {
+    setPlacedItems((current) =>
+      current.map((row) =>
+        row.map((spot) => {
+          if (spot && sameItem(spot.fullItem, item)) {
+            return null;
+          }
+
+          return spot;
+        })
+      )
+    );
+  }
+
   return (
     <div className="app">
       <Presets />
-      <Grid />
-      <Items token={token} />
+
+      <Grid
+        rows={rows}
+        cols={cols}
+        setRows={setRows}
+        setCols={setCols}
+        placedItems={placedItems}
+      />
+
+      <Items
+        token={token}
+        onPlaceItem={handlePlaceItem}
+        onCanPlaceItem={canPlaceItem}
+        onRemoveItemFromMatrix={handleRemoveItemFromMatrix}
+      />
     </div>
   );
 }
