@@ -152,8 +152,8 @@ body {
   color: black;
   display: grid;
   place-items: center;
-   position: relative; 
-  z-index: 10
+  position: relative;
+  z-index: 10;
 }
 
 /* TOP BAR */
@@ -197,7 +197,8 @@ body {
   right: 2vmin;
   top: 18vmin;
 
-  width: clamp(180px, 26vmin, 320px);
+  width: clamp(260px, 32vw, 430px);
+  max-width: calc(100vw - 4vmin);
 
   color: black;
 }
@@ -262,6 +263,24 @@ body {
 .items-line {
   height: 2px;
   background: #933;
+}
+
+.item-select {
+  padding: 6px;
+  border-radius: 6px;
+  max-width: 160px;
+}
+
+.delete-item-button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-item-button:disabled,
+.item-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* popout item box */

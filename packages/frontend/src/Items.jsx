@@ -4,9 +4,26 @@ import SpawnedItem from "./SpawnedItem";
 
 function Items({ token }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
-  const [savedItems, setSavedItems] = useState([]);
+  const [accountItems, setAccountItems] = useState([]);
+  const [renderedItems, setRenderedItems] = useState([]);
+  const [selectedItemId, setSelectedItemId] = useState("");
 
   const API_URL = "http://localhost:8000";
+
+  function getItemId(item) {
+    const id = item?.id || item?._id;
+    return id ? String(id) : "";
+  }
+
+  function makeRenderedId(item) {
+    const itemId = getItemId(item);
+
+    if (crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+
+    return `${itemId}-${Date.now()}-${Math.random()}`;
+  }
 
   function shapeToCells(shape) {
     if (!Array.isArray(shape)) {
@@ -16,20 +33,29 @@ function Items({ token }) {
     return shape.flatMap((rowArray, row) =>
       rowArray
         .map((value, col) => (value === 1 ? { row, col } : null))
-        .filter(Boolean)
+        .filter(Boolean),
     );
   }
 
   function itemFromBackendToFrontend(item) {
     return {
       ...item,
+      id: getItemId(item),
       cells: item.cells || shapeToCells(item.shape),
     };
   }
 
-  async function handleSaveItem(newItem) {
-    console.log("Sending item to backend:", newItem);
+  function itemToRenderedItem(item) {
+    return {
+      ...item,
+      renderedId: makeRenderedId(item),
+    };
+  }
 
+  const selectedItem =
+    accountItems.find((item) => getItemId(item) === selectedItemId) || null;
+
+  async function handleSaveItem(newItem) {
     if (!token) {
       alert("Please log in before adding items.");
       return;
@@ -53,13 +79,15 @@ function Items({ token }) {
         return;
       }
 
-      console.log("Item saved by backend:", data);
+      const createdItem = itemFromBackendToFrontend(data.item || data);
 
-      setSavedItems((currentItems) => [
+      setAccountItems((currentItems) => [...currentItems, createdItem]);
+      setRenderedItems((currentItems) => [
         ...currentItems,
-        itemFromBackendToFrontend(data),
+        itemToRenderedItem(createdItem),
       ]);
 
+      setSelectedItemId(getItemId(createdItem));
       setShowWhiteBox(false);
     } catch (err) {
       console.error("Could not connect to backend:", err);
@@ -67,29 +95,97 @@ function Items({ token }) {
     }
   }
 
-  async function handleDeleteItem(itemToDelete) {
-    setSavedItems((currentItems) =>
-      currentItems.filter((item) => item !== itemToDelete)
+  function handleSelectItem(event) {
+    const itemId = event.target.value;
+    setSelectedItemId(itemId);
+
+    const itemToRender = accountItems.find(
+      (item) => getItemId(item) === itemId,
     );
 
-    if (itemToDelete.id) {
+    if (!itemToRender) {
+      return;
+    }
+
+    setRenderedItems((currentItems) => [
+      ...currentItems,
+      itemToRenderedItem(itemToRender),
+    ]);
+  }
+
+  function handleRemoveItemFromPage(itemToRemove) {
+    if (!itemToRemove) {
+      return;
+    }
+
+    setRenderedItems((currentItems) =>
+      currentItems.filter(
+        (item) => item.renderedId !== itemToRemove.renderedId,
+      ),
+    );
+  }
+
+  async function handleDeleteItemFromDatabase(itemToDelete = selectedItem) {
+    if (!token) {
+      alert("Please log in before deleting items.");
+      return;
+    }
+
+    if (!itemToDelete) {
+      alert("Please select an item to delete.");
+      return;
+    }
+
+    const itemId = getItemId(itemToDelete);
+
+    if (!itemId) {
+      alert("This item does not have a database id.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/items/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      let data = {};
+
       try {
-        await fetch(`${API_URL}/items/${itemToDelete.id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } catch (err) {
-        console.error("Could not delete item from backend:", err);
+        data = await response.json();
+      } catch {
+        data = {};
       }
+
+      if (!response.ok) {
+        console.error("Could not delete item:", data);
+        alert(data.error || "Error deleting item.");
+        return;
+      }
+
+      setAccountItems((currentItems) =>
+        currentItems.filter((item) => getItemId(item) !== itemId),
+      );
+
+      setRenderedItems((currentItems) =>
+        currentItems.filter((item) => getItemId(item) !== itemId),
+      );
+
+      setSelectedItemId((currentId) => (currentId === itemId ? "" : currentId));
+    } catch (err) {
+      console.error("Could not delete item from backend:", err);
+      alert("Could not connect to backend.");
     }
   }
 
   useEffect(() => {
     async function loadItems() {
       if (!token) {
-        setSavedItems([]);
+        setAccountItems([]);
+        setRenderedItems([]);
+        setSelectedItemId("");
         return;
       }
 
@@ -107,7 +203,18 @@ function Items({ token }) {
           return;
         }
 
-        setSavedItems(data.items_list.map(itemFromBackendToFrontend));
+        const backendItems = Array.isArray(data)
+          ? data
+          : data.items_list || data.items || [];
+
+        const frontendItems = backendItems.map(itemFromBackendToFrontend);
+
+        setAccountItems(frontendItems);
+        setRenderedItems(frontendItems.map(itemToRenderedItem));
+
+        setSelectedItemId(
+          frontendItems.length > 0 ? getItemId(frontendItems[0]) : "",
+        );
       } catch (err) {
         console.error("Could not load items.", err);
       }
@@ -131,6 +238,31 @@ function Items({ token }) {
           </button>
         </div>
 
+        <select
+          className="item-select"
+          value={selectedItemId}
+          onChange={handleSelectItem}
+          disabled={!token || accountItems.length === 0}
+        >
+          <option value="">
+            {token ? "Select an item" : "Log in to view items"}
+          </option>
+
+          {accountItems.map((item) => (
+            <option key={getItemId(item)} value={getItemId(item)}>
+              {item.name || "Unnamed Item"}
+            </option>
+          ))}
+        </select>
+
+        <button
+          className="delete-item-button"
+          onClick={() => handleDeleteItemFromDatabase()}
+          disabled={!selectedItem}
+        >
+          Delete
+        </button>
+
         <div className="item-black"></div>
       </div>
 
@@ -142,11 +274,11 @@ function Items({ token }) {
             to drag
           </div>
 
-          {savedItems.map((item, index) => (
+          {renderedItems.map((item) => (
             <SpawnedItem
-              key={item.id || index}
+              key={item.renderedId}
               item={item}
-              onDelete={handleDeleteItem}
+              onDelete={handleRemoveItemFromPage}
             />
           ))}
         </div>
@@ -164,7 +296,6 @@ function Items({ token }) {
         <Popout
           onClose={() => setShowWhiteBox(false)}
           onSave={handleSaveItem}
-          onDelete={handleDeleteItem}
         />
       )}
     </div>
