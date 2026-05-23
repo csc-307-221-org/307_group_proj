@@ -17,6 +17,8 @@ function HomePage({ token }) {
     Array.from({ length: 4 }, () => Array(4).fill(null))
   );
 
+  const [presets, setPresets] = useState([]);
+
   useEffect(() => {
     setPlacedItems((current) =>
       Array.from({ length: rows }, (_, row) =>
@@ -28,7 +30,12 @@ function HomePage({ token }) {
   function sameItem(a, b) {
     if (!a || !b) return false;
 
-    if (a.id !== undefined && a.id !== null && b.id !== undefined && b.id !== null) {
+    if (
+      a.id !== undefined &&
+      a.id !== null &&
+      b.id !== undefined &&
+      b.id !== null
+    ) {
       return a.id === b.id;
     }
 
@@ -38,10 +45,21 @@ function HomePage({ token }) {
   function getShapeInfo(item) {
     const cells = item.cells || [];
 
-    const minRow = cells.length ? Math.min(...cells.map((cell) => cell.row)) : 0;
-    const maxRow = cells.length ? Math.max(...cells.map((cell) => cell.row)) : 0;
-    const minCol = cells.length ? Math.min(...cells.map((cell) => cell.col)) : 0;
-    const maxCol = cells.length ? Math.max(...cells.map((cell) => cell.col)) : 0;
+    const minRow = cells.length
+      ? Math.min(...cells.map((cell) => cell.row))
+      : 0;
+
+    const maxRow = cells.length
+      ? Math.max(...cells.map((cell) => cell.row))
+      : 0;
+
+    const minCol = cells.length
+      ? Math.min(...cells.map((cell) => cell.col))
+      : 0;
+
+    const maxCol = cells.length
+      ? Math.max(...cells.map((cell) => cell.col))
+      : 0;
 
     return {
       cells,
@@ -49,6 +67,20 @@ function HomePage({ token }) {
       minCol,
       itemSize: `${maxRow - minRow + 1}x${maxCol - minCol + 1}`,
     };
+  }
+
+  function copyPlacedItems(grid) {
+    return grid.map((row) =>
+      row.map((cell) => {
+        if (!cell) return null;
+
+        return {
+          ...cell,
+          itemPiece: { ...cell.itemPiece },
+          fullItem: { ...cell.fullItem },
+        };
+      })
+    );
   }
 
   function canPlaceItem(item, startRow, startCol) {
@@ -132,9 +164,33 @@ function HomePage({ token }) {
     );
   }
 
+  function saveCurrentPreset() {
+    const presetCopy = copyPlacedItems(placedItems);
+
+    setPresets((currentPresets) => [
+      ...currentPresets,
+      {
+        name: `Preset ${currentPresets.length + 1}`,
+        rows: rows,
+        cols: cols,
+        grid: presetCopy,
+      },
+    ]);
+  }
+
+  function loadPreset(preset) {
+    setRows(preset.rows);
+    setCols(preset.cols);
+    setPlacedItems(copyPlacedItems(preset.grid));
+  }
+
   return (
     <div className="app">
-      <Presets />
+      <Presets
+        presets={presets}
+        onSavePreset={saveCurrentPreset}
+        onLoadPreset={loadPreset}
+      />
 
       <Grid
         rows={rows}
