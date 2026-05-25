@@ -12,7 +12,8 @@ import backpackServices from "./services/backpack-services.js";
 dotenv.config();
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
+const TEMP_OWNER_ID = "676767676767676767676767";
 
 // lets us read JSON data from requests
 app.use(cors());

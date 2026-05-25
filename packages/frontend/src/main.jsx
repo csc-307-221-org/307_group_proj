@@ -1,6 +1,4 @@
-// src/main.jsx
-
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -21,7 +19,7 @@ function HomePage({ token }) {
   );
 }
 
-function MyApp() {
+export default function MyApp() {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || "";
   });

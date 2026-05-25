@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function SpawnedItem({ item, onDelete }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -20,7 +20,7 @@ function SpawnedItem({ item, onDelete }) {
       Number(
         getComputedStyle(document.documentElement)
           .getPropertyValue("--matrix-cell-size")
-          .replace("px", "")
+          .replace("px", ""),
       ) || 60
     );
   }
