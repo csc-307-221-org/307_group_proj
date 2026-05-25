@@ -16,7 +16,7 @@ function Items({ token }) {
     return shape.flatMap((rowArray, row) =>
       rowArray
         .map((value, col) => (value === 1 ? { row, col } : null))
-        .filter(Boolean)
+        .filter(Boolean),
     );
   }
 
@@ -69,7 +69,7 @@ function Items({ token }) {
 
   async function handleDeleteItem(itemToDelete) {
     setSavedItems((currentItems) =>
-      currentItems.filter((item) => item !== itemToDelete)
+      currentItems.filter((item) => item !== itemToDelete),
     );
 
     if (itemToDelete.id) {

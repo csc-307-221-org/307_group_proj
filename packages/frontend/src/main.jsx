@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-import ReactDOM from "react-dom/client";
-=======
-// src/main.jsx
-
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
->>>>>>> 3404465dc543e90aaee34dd6a8730ef50894ca38
 import "./main.css";
 
 import Grid from "./Grid.jsx";
@@ -15,11 +9,7 @@ import Presets from "./Presets.jsx";
 import Login from "./Login.jsx";
 import Items from "./Items.jsx";
 
-<<<<<<< HEAD
-export default function MyApp() {
-=======
 function HomePage({ token }) {
->>>>>>> 3404465dc543e90aaee34dd6a8730ef50894ca38
   return (
     <div className="app">
       <Presets />
@@ -29,7 +19,7 @@ function HomePage({ token }) {
   );
 }
 
-function MyApp() {
+export default function MyApp() {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || "";
   });
