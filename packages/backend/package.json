@@ -10,9 +10,11 @@
     "test": "echo \"No backend tests yet\""
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^4.18.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.1"
   },
   "devDependencies": {

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
-function Items() {
+function Items({ token }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [savedItems, setSavedItems] = useState([]);
 
-  const API_URL = "http://localhost:8000"; // Change this later to whatever the backend URL is when we "deploy"
+  const API_URL = "http://localhost:8000";
 
   function shapeToCells(shape) {
     if (!Array.isArray(shape)) {
@@ -16,7 +16,7 @@ function Items() {
     return shape.flatMap((rowArray, row) =>
       rowArray
         .map((value, col) => (value === 1 ? { row, col } : null))
-        .filter(Boolean),
+        .filter(Boolean)
     );
   }
 
@@ -30,11 +30,17 @@ function Items() {
   async function handleSaveItem(newItem) {
     console.log("Sending item to backend:", newItem);
 
+    if (!token) {
+      alert("Please log in before adding items.");
+      return;
+    }
+
     try {
       const response = await fetch(`${API_URL}/items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newItem),
       });
@@ -61,20 +67,54 @@ function Items() {
     }
   }
 
+  async function handleDeleteItem(itemToDelete) {
+    setSavedItems((currentItems) =>
+      currentItems.filter((item) => item !== itemToDelete)
+    );
+
+    if (itemToDelete.id) {
+      try {
+        await fetch(`${API_URL}/items/${itemToDelete.id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (err) {
+        console.error("Could not delete item from backend:", err);
+      }
+    }
+  }
+
   useEffect(() => {
     async function loadItems() {
+      if (!token) {
+        setSavedItems([]);
+        return;
+      }
+
       try {
-        const response = await fetch(`${API_URL}/items`);
+        const response = await fetch(`${API_URL}/items`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         const data = await response.json();
 
-        setSavedItems(data.map(itemFromBackendToFrontend));
+        if (!response.ok) {
+          console.error("Could not load items.", data);
+          return;
+        }
+
+        setSavedItems(data.items_list.map(itemFromBackendToFrontend));
       } catch (err) {
         console.error("Could not load items.", err);
       }
     }
 
     loadItems();
-  }, []);
+  }, [token]);
 
   return (
     <div className="items-wrap">
@@ -83,7 +123,6 @@ function Items() {
 
         <div className="item-red">
           <button
-            // type="button"
             title="Press Me"
             className="item-red"
             onClick={() => setShowWhiteBox(true)}
@@ -91,6 +130,7 @@ function Items() {
             Add Items
           </button>
         </div>
+
         <div className="item-black"></div>
       </div>
 
@@ -103,7 +143,11 @@ function Items() {
           </div>
 
           {savedItems.map((item, index) => (
-            <SpawnedItem key={index} item={item} />
+            <SpawnedItem
+              key={item.id || index}
+              item={item}
+              onDelete={handleDeleteItem}
+            />
           ))}
         </div>
 
@@ -120,6 +164,7 @@ function Items() {
         <Popout
           onClose={() => setShowWhiteBox(false)}
           onSave={handleSaveItem}
+          onDelete={handleDeleteItem}
         />
       )}
     </div>
