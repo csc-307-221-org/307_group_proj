@@ -77,7 +77,6 @@ function HomePage({ token }) {
         return {
           ...cell,
           itemPiece: { ...cell.itemPiece },
-          fullItem: { ...cell.fullItem },
         };
       }),
     );
@@ -100,54 +99,60 @@ function HomePage({ token }) {
   }
 
   function handlePlaceItem(item, startRow, startCol) {
-    setPlacedItems((current) => {
-      const { cells, minRow, minCol, itemSize } = getShapeInfo(item);
-
-      const blocked = cells.some((cell) => {
-        const gridRow = startRow + (cell.row - minRow);
-        const gridCol = startCol + (cell.col - minCol);
-
-        const spot = current[gridRow]?.[gridCol];
-
-        if (spot === undefined) return true;
-        if (spot === null) return false;
-
-        return !sameItem(spot.fullItem, item);
-      });
-
-      if (blocked) {
-        alert("There is already an item there.");
-        return current;
-      }
-
-      const updated = current.map((row) =>
-        row.map((spot) => {
-          if (spot && sameItem(spot.fullItem, item)) {
-            return null;
-          }
-
-          return spot;
-        }),
-      );
-
-      cells.forEach((cell) => {
-        const gridRow = startRow + (cell.row - minRow);
-        const gridCol = startCol + (cell.col - minCol);
-
-        updated[gridRow][gridCol] = {
-          name: item.name,
-          description: item.description,
-          itemSize,
-          itemPiece: {
-            row: cell.row - minRow,
-            col: cell.col - minCol,
-          },
-          fullItem: item,
-        };
-      });
-
-      return updated;
+    setPlacedItems((currentGrid) => {
+      return placeItemInGrid(currentGrid, item, startRow, startCol);
     });
+  }
+
+  function placeItemInGrid(current, item, startRow, startCol) {
+    let updated = copyPlacedItems(current);
+
+    const { cells, minRow, minCol, itemSize } = getShapeInfo(item);
+
+    const blocked = cells.some((cell) => {
+      const gridRow = startRow + (cell.row - minRow);
+      const gridCol = startCol + (cell.col - minCol);
+
+      const spot = current[gridRow]?.[gridCol];
+
+      if (spot === undefined) return true;
+      if (spot === null) return false;
+
+      return !sameItem(spot.fullItem, item);
+    });
+
+    if (blocked) {
+      alert("There is already an item there.");
+      return current;
+    }
+
+    updated = updated.map((row) =>
+      row.map((spot) => {
+        if (spot && sameItem(spot.fullItem, item)) {
+          return null;
+        }
+
+        return spot;
+      }),
+    );
+
+    cells.forEach((cell) => {
+      const gridRow = startRow + (cell.row - minRow);
+      const gridCol = startCol + (cell.col - minCol);
+
+      updated[gridRow][gridCol] = {
+        name: item.name,
+        description: item.description,
+        itemSize,
+        itemPiece: {
+          row: cell.row - minRow,
+          col: cell.col - minCol,
+        },
+        fullItem: item,
+      };
+    });
+
+    return updated;
   }
 
   function handleRemoveItemFromMatrix(item) {
