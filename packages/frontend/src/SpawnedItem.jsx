@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function SpawnedItem({ item, onDelete }) {
+function SpawnedItem({ item, onDelete, onFirstDrag }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [moved, setMoved] = useState(false);
@@ -52,36 +52,86 @@ function SpawnedItem({ item, onDelete }) {
     const offsetX = e.clientX - startRect.left;
     const offsetY = e.clientY - startRect.top;
 
+    let didMove = false;
+    let replacementSpawned = moved;
+
     setDragging(true);
-    setMoved(true);
+
+    function getItemRect(x, y) {
+      return {
+        left: x,
+        top: y,
+        right: x + itemElement.offsetWidth,
+        bottom: y + itemElement.offsetHeight,
+      };
+    }
+
+    function getDeleteBox() {
+      return document.querySelector(".delete-box");
+    }
+
+    function setDeleteBoxHighlight(isActive) {
+      const deleteBox = getDeleteBox();
+
+      if (!deleteBox) {
+        return;
+      }
+
+      deleteBox.classList.toggle("delete-box-active", isActive);
+    }
 
     function moveItem(moveEvent) {
+      didMove = true;
+
+      const nextX = moveEvent.clientX - offsetX;
+      const nextY = moveEvent.clientY - offsetY;
+
+      if (!replacementSpawned) {
+        onFirstDrag?.(item);
+        replacementSpawned = true;
+        setMoved(true);
+      }
+
       setPos({
-        x: moveEvent.clientX - offsetX,
-        y: moveEvent.clientY - offsetY,
+        x: nextX,
+        y: nextY,
       });
+
+      const deleteBox = getDeleteBox();
+
+      if (!deleteBox) {
+        return;
+      }
+
+      const isOverDeleteBox = isTouching(
+        getItemRect(nextX, nextY),
+        deleteBox.getBoundingClientRect(),
+      );
+
+      setDeleteBoxHighlight(isOverDeleteBox);
     }
 
     function stopDrag(upEvent) {
       setDragging(false);
 
+      if (!didMove) {
+        cleanup();
+        return;
+      }
+
       const finalX = upEvent.clientX - offsetX;
       const finalY = upEvent.clientY - offsetY;
 
-      const itemRect = {
-        left: finalX,
-        top: finalY,
-        right: finalX + itemElement.offsetWidth,
-        bottom: finalY + itemElement.offsetHeight,
-      };
+      const itemRect = getItemRect(finalX, finalY);
+      const deleteBox = getDeleteBox();
 
-      const deleteBox = document.querySelector(".delete-box");
+      const shouldDelete =
+        deleteBox && isTouching(itemRect, deleteBox.getBoundingClientRect());
 
-      if (
-        deleteBox &&
-        isTouching(itemRect, deleteBox.getBoundingClientRect())
-      ) {
-        onDelete(item);
+      setDeleteBoxHighlight(false);
+
+      if (shouldDelete) {
+        onDelete?.(item);
         cleanup();
         return;
       }
@@ -135,6 +185,7 @@ function SpawnedItem({ item, onDelete }) {
     }
 
     function cleanup() {
+      setDeleteBoxHighlight(false);
       window.removeEventListener("mousemove", moveItem);
       window.removeEventListener("mouseup", stopDrag);
     }

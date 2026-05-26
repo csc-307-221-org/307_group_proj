@@ -18,8 +18,8 @@ function Items({ token }) {
   function makeRenderedId(item) {
     const itemId = getItemId(item);
 
-    if (crypto.randomUUID) {
-      return crypto.randomUUID();
+    if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+      return window.crypto.randomUUID();
     }
 
     return `${itemId}-${Date.now()}-${Math.random()}`;
@@ -49,11 +49,38 @@ function Items({ token }) {
     return {
       ...item,
       renderedId: makeRenderedId(item),
+      hasBeenDragged: false,
     };
   }
 
   const selectedItem =
     accountItems.find((item) => getItemId(item) === selectedItemId) || null;
+
+  function replaceItemInDragBox(itemToRender) {
+    if (!itemToRender) {
+      return;
+    }
+
+    setRenderedItems((currentItems) => [
+      ...currentItems.filter((item) => item.hasBeenDragged),
+      itemToRenderedItem(itemToRender),
+    ]);
+  }
+
+  function handleSpawnItemOnPage(itemToSpawn) {
+    if (!itemToSpawn) {
+      return;
+    }
+
+    setRenderedItems((currentItems) => [
+      ...currentItems.map((item) =>
+        item.renderedId === itemToSpawn.renderedId
+          ? { ...item, hasBeenDragged: true }
+          : item,
+      ),
+      itemToRenderedItem(itemToSpawn),
+    ]);
+  }
 
   async function handleSaveItem(newItem) {
     if (!token) {
@@ -82,12 +109,13 @@ function Items({ token }) {
       const createdItem = itemFromBackendToFrontend(data.item || data);
 
       setAccountItems((currentItems) => [...currentItems, createdItem]);
+      setSelectedItemId(getItemId(createdItem));
+
       setRenderedItems((currentItems) => [
-        ...currentItems,
+        ...currentItems.filter((item) => item.hasBeenDragged),
         itemToRenderedItem(createdItem),
       ]);
 
-      setSelectedItemId(getItemId(createdItem));
       setShowWhiteBox(false);
     } catch (err) {
       console.error("Could not connect to backend:", err);
@@ -103,14 +131,7 @@ function Items({ token }) {
       (item) => getItemId(item) === itemId,
     );
 
-    if (!itemToRender) {
-      return;
-    }
-
-    setRenderedItems((currentItems) => [
-      ...currentItems,
-      itemToRenderedItem(itemToRender),
-    ]);
+    replaceItemInDragBox(itemToRender);
   }
 
   function handleRemoveItemFromPage(itemToRemove) {
@@ -165,15 +186,29 @@ function Items({ token }) {
         return;
       }
 
-      setAccountItems((currentItems) =>
-        currentItems.filter((item) => getItemId(item) !== itemId),
+      const remainingAccountItems = accountItems.filter(
+        (item) => getItemId(item) !== itemId,
       );
 
-      setRenderedItems((currentItems) =>
-        currentItems.filter((item) => getItemId(item) !== itemId),
-      );
+      const nextSelectedItem = remainingAccountItems[0] || null;
+      const nextSelectedItemId = nextSelectedItem
+        ? getItemId(nextSelectedItem)
+        : "";
 
-      setSelectedItemId((currentId) => (currentId === itemId ? "" : currentId));
+      setAccountItems(remainingAccountItems);
+      setSelectedItemId(nextSelectedItemId);
+
+      setRenderedItems((currentItems) => {
+        const remainingDraggedItems = currentItems.filter(
+          (item) => getItemId(item) !== itemId && item.hasBeenDragged,
+        );
+
+        if (!nextSelectedItem) {
+          return remainingDraggedItems;
+        }
+
+        return [...remainingDraggedItems, itemToRenderedItem(nextSelectedItem)];
+      });
     } catch (err) {
       console.error("Could not delete item from backend:", err);
       alert("Could not connect to backend.");
@@ -208,13 +243,11 @@ function Items({ token }) {
           : data.items_list || data.items || [];
 
         const frontendItems = backendItems.map(itemFromBackendToFrontend);
+        const firstItem = frontendItems[0] || null;
 
         setAccountItems(frontendItems);
-        setRenderedItems(frontendItems.map(itemToRenderedItem));
-
-        setSelectedItemId(
-          frontendItems.length > 0 ? getItemId(frontendItems[0]) : "",
-        );
+        setSelectedItemId(firstItem ? getItemId(firstItem) : "");
+        setRenderedItems(firstItem ? [itemToRenderedItem(firstItem)] : []);
       } catch (err) {
         console.error("Could not load items.", err);
       }
@@ -267,28 +300,29 @@ function Items({ token }) {
       </div>
 
       <div className="items-panel">
-        <div className="drop-box">
-          <div className="drop-box-label">
-            Where Item is
-            <br />
-            to drag
-          </div>
-
+        <div className="drop-box" aria-label="Items available to drag">
           {renderedItems.map((item) => (
             <SpawnedItem
               key={item.renderedId}
               item={item}
               onDelete={handleRemoveItemFromPage}
+              onFirstDrag={handleSpawnItemOnPage}
             />
           ))}
         </div>
 
-        <div className="items-line"></div>
-
-        <div className="delete-box">
-          Drag Item to
-          <br />
-          Delete here
+        <div
+          className="delete-box"
+          aria-label="Drag item here to remove it from the page"
+          title="Drag item here to remove it from the page"
+        >
+          <svg className="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18" />
+            <path d="M8 6V4h8v2" />
+            <path d="M6 6l1 16h10l1-16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+          </svg>
         </div>
       </div>
 

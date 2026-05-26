@@ -25,12 +25,14 @@ body,
   /* Rounded edges */
   --roundness: 8px;
 }
+
 /* default solid color body */
 /*
 body {
   background: var(--color-bg);
 }
 */
+
 /* getting rid of leon for now, ill add it back once i get a palette */
 
 body {
@@ -100,7 +102,7 @@ body {
   box-sizing: border-box;
 }
 
-/* PRESETS*/
+/* PRESETS */
 .presets {
   position: fixed;
   left: 2vmin;
@@ -190,26 +192,28 @@ body {
   height: 3vmin;
 }
 
-/* ITEMS (RIGHT FLOATING BOX) */
-/* ITEM BOX */
+/* ITEMS */
+
 .items-wrap {
   position: fixed;
   right: 2vmin;
   top: 18vmin;
 
-  width: clamp(260px, 32vw, 430px);
+  width: clamp(360px, 34vw, 560px);
   max-width: calc(100vw - 4vmin);
 
   color: black;
 }
 
 .items-top {
-  height: clamp(45px, 6vmin, 70px);
+  min-height: clamp(45px, 6vmin, 70px);
+  height: auto;
   background: #ddd;
 
   display: flex;
   align-items: center;
-  gap: 1vmin;
+  flex-wrap: wrap;
+  gap: 8px;
 
   padding: 1vmin;
   box-sizing: border-box;
@@ -218,63 +222,40 @@ body {
   font-size: clamp(18px, 2.5vmin, 32px);
 }
 
+.items-top > span {
+  flex: 0 0 auto;
+}
+
+.item-red {
+  flex: 0 0 auto;
+}
+
 .item-red button {
-  width: 80px;
-  height: 30px;
+  width: 110px;
+  height: 36px;
   background: var(--color-accent);
   cursor: pointer;
   color: var(--color-text-2);
   border-radius: var(--roundness);
   border: 2px solid var(--color-primary);
-}
-
-.item-black {
-  width: clamp(20px, 2.5vmin, 35px);
-  height: clamp(20px, 2.5vmin, 35px);
-  background: black;
-}
-
-.items-panel {
-  margin-top: 3vmin;
-  height: clamp(220px, 35vmin, 450px);
-  background: var(--color-primary);
-  padding: clamp(20px, 4vmin, 50px) clamp(15px, 3vmin, 40px);
-
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: var(--roundness);
-}
-
-.drop-box,
-.delete-box {
-  background: var(--color-secondary);
-  color: var(--color-text-2);
-
-  padding: clamp(12px, 1.5vmin, 25px);
-
-  font-size: clamp(16px, 2.2vmin, 28px);
-
-  border: 1px solid #333;
-}
-
-.items-line {
-  height: 2px;
-  background: #933;
+  font-size: 18px;
 }
 
 .item-select {
-  padding: 6px;
+  flex: 1 1 160px;
+  min-width: 130px;
+  max-width: 100%;
+  padding: 7px;
   border-radius: 6px;
-  max-width: 160px;
+  font-size: 18px;
 }
 
 .delete-item-button {
-  padding: 6px 10px;
+  flex: 0 0 auto;
+  padding: 7px 14px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 18px;
 }
 
 .delete-item-button:disabled,
@@ -283,7 +264,107 @@ body {
   opacity: 0.6;
 }
 
-/* popout item box */
+.item-black {
+  display: none;
+}
+
+.items-panel {
+  margin-top: 3vmin;
+  min-height: clamp(430px, 55vmin, 680px);
+  height: auto;
+  background: var(--color-primary);
+  padding: clamp(18px, 3vmin, 40px);
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(16px, 2vmin, 28px);
+
+  border-radius: var(--roundness);
+}
+
+.drop-box {
+  background: var(--color-secondary);
+  color: var(--color-text-2);
+
+  min-height: clamp(220px, 30vmin, 380px);
+  padding: clamp(14px, 2vmin, 28px);
+
+  border: 1px solid var(--color-primary);
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 16px;
+
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.drop-box-label {
+  display: none;
+}
+
+.items-line {
+  display: none;
+}
+
+.delete-box {
+  background: var(--color-secondary);
+  color: var(--color-text-2);
+
+  min-height: clamp(115px, 15vmin, 190px);
+  padding: clamp(12px, 2vmin, 28px);
+
+  border: 2px dashed #333;
+  border-radius: var(--roundness);
+
+  display: grid;
+  place-items: center;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.delete-box.delete-box-active {
+  background: #2b1717;
+  border-color: var(--color-accent);
+  box-shadow:
+    0 0 12px rgba(237, 70, 70, 0.8),
+    0 0 28px rgba(237, 70, 70, 0.45);
+  transform: scale(1.02);
+}
+
+.trash-icon {
+  width: clamp(44px, 6vmin, 80px);
+  height: clamp(44px, 6vmin, 80px);
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition:
+    color 150ms ease,
+    filter 150ms ease,
+    transform 150ms ease;
+}
+
+.delete-box.delete-box-active .trash-icon {
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 10px rgba(237, 70, 70, 0.95));
+  transform: scale(1.12);
+}
+
+/* POPOUT ITEM BOX */
 
 .white-popup-box {
   position: fixed;
@@ -383,8 +464,10 @@ body {
   font-size: 16px;
 }
 
-/* spawned item */
+/* SPAWNED ITEM */
+
 .spawned-shape {
+  flex: 0 0 auto;
   width: fit-content;
   height: fit-content;
   cursor: grab;
@@ -436,25 +519,4 @@ body {
 .spawned-shape-cell.empty {
   background: transparent;
   border: 1px solid transparent;
-}
-
-/* drop box */
-.drop-box {
-  background: var(--color-secondary);
-  color: var(--color-text-2);
-
-  min-height: 90px;
-  padding: clamp(12px, 1.5vmin, 25px);
-
-  font-size: clamp(16px, 2.2vmin, 28px);
-
-  border: 1px solid var(--color-primary);
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.drop-box-label {
-  margin-bottom: 8px;
 }
