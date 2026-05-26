@@ -455,11 +455,10 @@ body {
    - UI fades into the screen
    - Panels slightly rise upward while appearing
    - Creates a smooth, cinematic inventory startup feel
-*/ 
+*/
 
 .grid-box,
-.top-bar,
-.items-wrap {
+.top-bar {
   animation: uiBootIn 420ms ease-out both;
 }
 
@@ -534,7 +533,7 @@ body {
  */
 
 .white-popup-box {
-  animation: popupOpen 180ms ease-out both;
+  animation: popupOpen 500ms ease-out both;
 }
 
 @keyframes popupOpen {
