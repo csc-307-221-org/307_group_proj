@@ -26,7 +26,7 @@ function SpawnedItem({
       Number(
         getComputedStyle(document.documentElement)
           .getPropertyValue("--matrix-cell-size")
-          .replace("px", "")
+          .replace("px", ""),
       ) || 60
     );
   }
