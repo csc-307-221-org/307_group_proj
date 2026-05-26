@@ -43,11 +43,18 @@ function SpawnedItem({ item, onDelete }) {
     );
   }
 
+
+
   function startDrag(e) {
     e.preventDefault();
 
     const itemElement = e.currentTarget;
     const startRect = itemElement.getBoundingClientRect();
+
+    setPos({
+      x: startRect.left,
+      y: startRect.top,
+    });
 
     const offsetX = e.clientX - startRect.left;
     const offsetY = e.clientY - startRect.top;
@@ -150,13 +157,13 @@ function SpawnedItem({ item, onDelete }) {
       style={
         moved
           ? {
-              position: "fixed",
-              left: pos.x,
-              top: pos.y,
-              margin: 0,
-              zIndex: 99999,
-              cursor: dragging ? "grabbing" : "grab",
-            }
+            position: "fixed",
+            left: pos.x,
+            top: pos.y,
+            margin: 0,
+            zIndex: 99999,
+            cursor: dragging ? "grabbing" : "grab",
+          }
           : undefined
       }
     >
