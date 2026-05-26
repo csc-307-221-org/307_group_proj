@@ -190,6 +190,7 @@ function HomePage({ token }) {
     setRows(preset.rows);
     setCols(preset.cols);
     setPlacedItems(copyPlacedItems(preset.grid));
+    // copyPlacedItems(preset.grid).forEach();
   }
 
   return (
