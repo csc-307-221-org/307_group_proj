@@ -14,7 +14,7 @@ function HomePage({ token }) {
   const [cols, setCols] = useState(4);
 
   const [placedItems, setPlacedItems] = useState(() =>
-    Array.from({ length: 4 }, () => Array(4).fill(null))
+    Array.from({ length: 4 }, () => Array(4).fill(null)),
   );
 
   const [presets, setPresets] = useState([]);
@@ -22,8 +22,8 @@ function HomePage({ token }) {
   useEffect(() => {
     setPlacedItems((current) =>
       Array.from({ length: rows }, (_, row) =>
-        Array.from({ length: cols }, (_, col) => current[row]?.[col] || null)
-      )
+        Array.from({ length: cols }, (_, col) => current[row]?.[col] || null),
+      ),
     );
   }, [rows, cols]);
 
@@ -79,7 +79,7 @@ function HomePage({ token }) {
           itemPiece: { ...cell.itemPiece },
           fullItem: { ...cell.fullItem },
         };
-      })
+      }),
     );
   }
 
@@ -127,7 +127,7 @@ function HomePage({ token }) {
           }
 
           return spot;
-        })
+        }),
       );
 
       cells.forEach((cell) => {
@@ -159,8 +159,8 @@ function HomePage({ token }) {
           }
 
           return spot;
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -178,6 +178,14 @@ function HomePage({ token }) {
     ]);
   }
 
+  function deleteCurrentPreset(index) {
+    console.log("preset:", presets.at(index));
+    console.log("index:", index);
+    setPresets((presets) => {
+      return presets.filter((_, i) => i !== index);
+    });
+  }
+
   function loadPreset(preset) {
     setRows(preset.rows);
     setCols(preset.cols);
@@ -189,6 +197,7 @@ function HomePage({ token }) {
       <Presets
         presets={presets}
         onSavePreset={saveCurrentPreset}
+        onDeletePreset={deleteCurrentPreset}
         onLoadPreset={loadPreset}
       />
 

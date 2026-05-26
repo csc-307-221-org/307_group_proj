@@ -1,9 +1,15 @@
 import React from "react";
 
-function Presets({ presets = [], onSavePreset, onLoadPreset }) {
+function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
   function handleSave() {
     if (onSavePreset) {
       onSavePreset();
+    }
+  }
+
+  function handleDelete(index) {
+    if (onDeletePreset) {
+      onDeletePreset(index);
     }
   }
 
@@ -24,17 +30,25 @@ function Presets({ presets = [], onSavePreset, onLoadPreset }) {
           <div className="preset-box">No presets yet</div>
         ) : (
           presets.map((preset, index) => (
-            <button
-              type="button"
-              className="preset-box"
-              key={index}
-              onClick={() => onLoadPreset && onLoadPreset(preset)}
-            >
-              <div>{preset.name}</div>
-              <div>
-                {preset.rows} x {preset.cols}
-              </div>
-            </button>
+            <React.Fragment key={index}>
+              <button
+                type="button"
+                className="preset-box"
+                onClick={() => onLoadPreset && onLoadPreset(preset)}
+              >
+                <div>{preset.name}</div>
+                <div>
+                  {preset.rows} x {preset.cols}
+                </div>
+              </button>
+              <button
+                type="button"
+                className="preset-delete"
+                onClick={() => handleDelete(index)}
+              >
+                delete
+              </button>
+            </React.Fragment>
           ))
         )}
       </div>
