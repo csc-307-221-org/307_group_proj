@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import validateShapeMatrix from "../utils/validateShapeMatrix.js";
+import validateBackpackPlacements from "../utils/validateBackpackPlacements.js";
 
 const BackpackItemSchema = new mongoose.Schema(
   {
@@ -126,6 +127,14 @@ const BackpackSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+BackpackSchema.pre("validate", function () {
+  try {
+    validateBackpackPlacements(this);
+  } catch (err) {
+    this.invalidate("placements", err.message);
+  }
+});
 
 const Backpack = mongoose.model("Backpack", BackpackSchema);
 

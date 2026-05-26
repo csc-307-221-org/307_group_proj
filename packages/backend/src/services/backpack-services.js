@@ -19,25 +19,33 @@ function deleteBackpackById(id, ownerId) {
   return backpackModel.findOneAndDelete({ _id: id, ownerId: ownerId });
 }
 
-function updateBackpackById(id, ownerId, backpack) {
-  const updatedBackpack = {
-    name: backpack.name,
-    description: backpack.description,
-    rows: backpack.rows,
-    cols: backpack.cols,
-    items: backpack.items,
-    placements: backpack.placements,
-    weightsum: backpack.weightsum,
-  };
+async function updateBackpackById(id, ownerId, backpack) {
+  const existingBackpack = await backpackModel.findOne({
+    _id: id,
+    ownerId: ownerId,
+  });
 
-  return backpackModel.findOneAndUpdate(
-    { _id: id, ownerId: ownerId },
-    updatedBackpack,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  if (existingBackpack === null) {
+    return null;
+  }
+
+  const allowedFields = [
+    "name",
+    "description",
+    "rows",
+    "cols",
+    "items",
+    "placements",
+    "weightsum",
+  ];
+
+  for (const field of allowedFields) {
+    if (backpack[field] !== undefined) {
+      existingBackpack[field] = backpack[field];
+    }
+  }
+
+  return existingBackpack.save();
 }
 
 export default {
