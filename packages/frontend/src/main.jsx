@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -18,7 +18,7 @@ function HomePage({ token }) {
   );
 
   const [presets, setPresets] = useState([]);
-
+// eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setPlacedItems((current) =>
       Array.from({ length: rows }, (_, row) =>
