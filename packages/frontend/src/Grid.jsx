@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import useWindowScale from "./Windowscale";
 
 function Grid({ rows, cols, setRows, setCols, placedItems }) {
- 
-
   const safeRows = Number(rows) || 1;
   const safeCols = Number(cols) || 1;
 
@@ -91,7 +89,8 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
                     <div>{placedItem.name}</div>
 
                     <div>
-                      Piece: [{placedItem.itemPiece.row}, {placedItem.itemPiece.col}]
+                      Piece: [{placedItem.itemPiece.row},{" "}
+                      {placedItem.itemPiece.col}]
                     </div>
 
                     <div>

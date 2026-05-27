@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
-function Items({ token,onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem}) {
+function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [savedItems, setSavedItems] = useState([]);
 
@@ -168,7 +168,6 @@ function Items({ token,onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem}) {
           onClose={() => setShowWhiteBox(false)}
           onSave={handleSaveItem}
           onDelete={handleDeleteItem}
-
         />
       )}
     </div>
