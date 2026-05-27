@@ -1,4 +1,4 @@
-import {useEffect } from "react";
+import { useEffect } from "react";
 import useWindowScale from "./Windowscale";
 
 function Grid({ rows, cols, setRows, setCols, placedItems }) {
