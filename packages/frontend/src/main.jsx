@@ -238,13 +238,16 @@ export default function MyApp() {
   }
 
   function loginUser(creds) {
-    fetch("http://localhost:8000/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    fetch(
+      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/login",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(creds),
       },
-      body: JSON.stringify(creds),
-    })
+    )
       .then((response) => {
         if (response.status === 200) {
           response.json().then((payload) => {
@@ -261,13 +264,16 @@ export default function MyApp() {
   }
 
   function signupUser(creds) {
-    fetch("http://localhost:8000/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    fetch(
+      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/signup",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(creds),
       },
-      body: JSON.stringify(creds),
-    })
+    )
       .then((response) => {
         if (response.status === 201) {
           response.json().then((payload) => {
@@ -284,11 +290,14 @@ export default function MyApp() {
   }
 
   function testProtectedRoute() {
-    fetch("http://localhost:8000/protected", {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    fetch(
+      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/protected",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    })
+    )
       .then((response) => response.text())
       .then((data) => {
         setMessage(data);
