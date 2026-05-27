@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function SpawnedItem({
   item,
@@ -26,7 +26,7 @@ function SpawnedItem({
       Number(
         getComputedStyle(document.documentElement)
           .getPropertyValue("--matrix-cell-size")
-          .replace("px", "")
+          .replace("px", ""),
       ) || 60
     );
   }

@@ -1,11 +1,5 @@
-import React from "react";
-
-function Presets({ presets = [], onSavePreset, onLoadPreset }) {
-  function handleSave() {
-    if (onSavePreset) {
-      onSavePreset();
-    }
-  }
+const Presets = () => {
+  const boxes = Array.from({ length: 20 });
 
   return (
     <div className="presets">

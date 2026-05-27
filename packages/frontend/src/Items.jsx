@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
@@ -16,7 +16,7 @@ function Items({ token,onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem}) {
     return shape.flatMap((rowArray, row) =>
       rowArray
         .map((value, col) => (value === 1 ? { row, col } : null))
-        .filter(Boolean)
+        .filter(Boolean),
     );
   }
 
@@ -69,7 +69,7 @@ function Items({ token,onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem}) {
 
   async function handleDeleteItem(itemToDelete) {
     setSavedItems((currentItems) =>
-      currentItems.filter((item) => item !== itemToDelete)
+      currentItems.filter((item) => item !== itemToDelete),
     );
 
     if (itemToDelete.id) {
