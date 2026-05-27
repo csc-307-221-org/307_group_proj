@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
@@ -144,7 +144,7 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
 
           {savedItems.map((item, index) => (
             <SpawnedItem
-              key={item.id || index}
+              key={item.id || item._id || `${item.name}-${index}`}
               item={item}
               onDelete={handleDeleteItem}
               onPlaceItem={onPlaceItem}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function SpawnedItem({
   item,
@@ -61,6 +61,11 @@ function SpawnedItem({
 
     const offsetX = e.clientX - startRect.left;
     const offsetY = e.clientY - startRect.top;
+
+    setPos({
+      x: startRect.left,
+      y: startRect.top,
+    });
 
     setDragging(true);
     setMoved(true);

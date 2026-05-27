@@ -9,6 +9,7 @@
     "dev:backend": "npm run dev -w backend",
     "dev": "npm run dev:frontend && npm run dev:backend",
     "lint": "eslint .",
+    "test": "echo \"No tests yet\"",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "format:check": "prettier --check './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },

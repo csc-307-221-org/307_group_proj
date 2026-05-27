@@ -225,7 +225,7 @@ function HomePage({ token }) {
   );
 }
 
-function MyApp() {
+export default function MyApp() {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || "";
   });
