@@ -18,7 +18,7 @@ function HomePage({ token }) {
   );
 
   const [presets, setPresets] = useState([]);
-// eslint-disable-next-line react-hooks/set-state-in-effect
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setPlacedItems((current) =>
       Array.from({ length: rows }, (_, row) =>
