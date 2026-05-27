@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useEffect } from "react";
 import useWindowScale from "./Windowscale";
 
 function Grid({ rows, cols, setRows, setCols, placedItems }) {
@@ -47,7 +47,7 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
             <span>X</span>
             <input
               min="1"
-              max="`10"
+              max="10"
               type="number"
               value={cols}
               onChange={(e) => handleChange(e, setCols)}
