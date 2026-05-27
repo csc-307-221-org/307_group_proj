@@ -7,6 +7,7 @@ function Popout({ onClose, onSave }) {
   const [clickedCells, setClickedCells] = useState([]);
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
+  const [weight, setWeight] = useState("");
 
   function handleCellClick(row, col) {
     const cell = { row: row, col: col };
@@ -30,6 +31,7 @@ function Popout({ onClose, onSave }) {
     const savedItem = {
       name: itemName,
       description: description,
+      weight: weight,
       cells: clickedCells,
     };
 
@@ -71,13 +73,22 @@ function Popout({ onClose, onSave }) {
               );
             })}
           </div>
+          <div>
+            <textarea
+              className="description-input"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
 
-          <textarea
-            className="description-input"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+            <input
+              className="weight-input"
+              type="number"
+              placeholder="weight"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+            />
+          </div>
         </div>
 
         <button type="button" className="save-item-button" onClick={handleSave}>
