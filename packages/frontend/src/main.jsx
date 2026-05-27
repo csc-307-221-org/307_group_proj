@@ -284,7 +284,7 @@ export default function MyApp() {
   }
 
   function testProtectedRoute() {
-    fetch("http://localhost:8000/protected", {
+    fetch("https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
