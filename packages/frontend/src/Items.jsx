@@ -9,7 +9,7 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
   const [selectedItemId, setSelectedItemId] = useState("");
 
   const API_URL =
-  "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net";
+    "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net";
 
   function getItemId(item) {
     const id = item?.id || item?._id;
