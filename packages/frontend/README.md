@@ -28,21 +28,18 @@ Create .vscode/settings.json in the root with the contents
     "source.fixAll.eslint": "explicit"
   },
 
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact"],
 
-  "eslint.workingDirectories": [
-    { "mode": "auto" }
-  ]
+  "eslint.workingDirectories": [{ "mode": "auto" }]
 }
 ```
+
 ## Authentication System
 
 The application uses JWT-based authentication with bcrypt password hashing.
 
 Features implemented:
+
 - User signup
 - User login
 - Password hashing using bcrypt
@@ -73,3 +70,4 @@ sequenceDiagram
     Backend-->>Frontend: Send token
     Frontend->>Frontend: Save token in state
     Frontend-->>User: Show signup success message
+```
