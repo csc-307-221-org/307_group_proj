@@ -4,9 +4,26 @@ import SpawnedItem from "./SpawnedItem";
 
 function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
-  const [savedItems, setSavedItems] = useState([]);
+  const [accountItems, setAccountItems] = useState([]);
+  const [renderedItems, setRenderedItems] = useState([]);
+  const [selectedItemId, setSelectedItemId] = useState("");
 
   const API_URL = "http://localhost:8000";
+
+  function getItemId(item) {
+    const id = item?.id || item?._id;
+    return id ? String(id) : "";
+  }
+
+  function makeRenderedId(item) {
+    const itemId = getItemId(item);
+
+    if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+
+    return `${itemId}-${Date.now()}-${Math.random()}`;
+  }
 
   function shapeToCells(shape) {
     if (!Array.isArray(shape)) {
@@ -23,13 +40,49 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
   function itemFromBackendToFrontend(item) {
     return {
       ...item,
+      id: getItemId(item),
       cells: item.cells || shapeToCells(item.shape),
     };
   }
 
-  async function handleSaveItem(newItem) {
-    console.log("Sending item to backend:", newItem);
+  function itemToRenderedItem(item) {
+    return {
+      ...item,
+      renderedId: makeRenderedId(item),
+      hasBeenDragged: false,
+    };
+  }
 
+  const selectedItem =
+    accountItems.find((item) => getItemId(item) === selectedItemId) || null;
+
+  function replaceItemInDragBox(itemToRender) {
+    if (!itemToRender) {
+      return;
+    }
+
+    setRenderedItems((currentItems) => [
+      ...currentItems.filter((item) => item.hasBeenDragged),
+      itemToRenderedItem(itemToRender),
+    ]);
+  }
+
+  function handleSpawnItemOnPage(itemToSpawn) {
+    if (!itemToSpawn) {
+      return;
+    }
+
+    setRenderedItems((currentItems) => [
+      ...currentItems.map((item) =>
+        item.renderedId === itemToSpawn.renderedId
+          ? { ...item, hasBeenDragged: true }
+          : item,
+      ),
+      itemToRenderedItem(itemToSpawn),
+    ]);
+  }
+
+  async function handleSaveItem(newItem) {
     if (!token) {
       alert("Please log in before adding items.");
       return;
@@ -53,11 +106,14 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
         return;
       }
 
-      console.log("Item saved by backend:", data);
+      const createdItem = itemFromBackendToFrontend(data.item || data);
 
-      setSavedItems((currentItems) => [
-        ...currentItems,
-        itemFromBackendToFrontend(data),
+      setAccountItems((currentItems) => [...currentItems, createdItem]);
+      setSelectedItemId(getItemId(createdItem));
+
+      setRenderedItems((currentItems) => [
+        ...currentItems.filter((item) => item.hasBeenDragged),
+        itemToRenderedItem(createdItem),
       ]);
 
       setShowWhiteBox(false);
@@ -67,29 +123,104 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
     }
   }
 
-  async function handleDeleteItem(itemToDelete) {
-    setSavedItems((currentItems) =>
-      currentItems.filter((item) => item !== itemToDelete),
+  function handleSelectItem(event) {
+    const itemId = event.target.value;
+    setSelectedItemId(itemId);
+
+    const itemToRender = accountItems.find(
+      (item) => getItemId(item) === itemId,
     );
 
-    if (itemToDelete.id) {
+    replaceItemInDragBox(itemToRender);
+  }
+
+  function handleRemoveItemFromPage(itemToRemove) {
+    if (!itemToRemove) {
+      return;
+    }
+
+    setRenderedItems((currentItems) =>
+      currentItems.filter(
+        (item) => item.renderedId !== itemToRemove.renderedId,
+      ),
+    );
+  }
+
+  async function handleDeleteItemFromDatabase(itemToDelete = selectedItem) {
+    if (!token) {
+      alert("Please log in before deleting items.");
+      return;
+    }
+
+    if (!itemToDelete) {
+      alert("Please select an item to delete.");
+      return;
+    }
+
+    const itemId = getItemId(itemToDelete);
+
+    if (!itemId) {
+      alert("This item does not have a database id.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/items/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      let data = {};
+
       try {
-        await fetch(`${API_URL}/items/${itemToDelete.id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } catch (err) {
-        console.error("Could not delete item from backend:", err);
+        data = await response.json();
+      } catch {
+        data = {};
       }
+
+      if (!response.ok) {
+        console.error("Could not delete item:", data);
+        alert(data.error || "Error deleting item.");
+        return;
+      }
+
+      const remainingAccountItems = accountItems.filter(
+        (item) => getItemId(item) !== itemId,
+      );
+
+      const nextSelectedItem = remainingAccountItems[0] || null;
+      const nextSelectedItemId = nextSelectedItem
+        ? getItemId(nextSelectedItem)
+        : "";
+
+      setAccountItems(remainingAccountItems);
+      setSelectedItemId(nextSelectedItemId);
+
+      setRenderedItems((currentItems) => {
+        const remainingDraggedItems = currentItems.filter(
+          (item) => getItemId(item) !== itemId && item.hasBeenDragged,
+        );
+
+        if (!nextSelectedItem) {
+          return remainingDraggedItems;
+        }
+
+        return [...remainingDraggedItems, itemToRenderedItem(nextSelectedItem)];
+      });
+    } catch (err) {
+      console.error("Could not delete item from backend:", err);
+      alert("Could not connect to backend.");
     }
   }
 
   useEffect(() => {
     async function loadItems() {
       if (!token) {
-        setSavedItems([]);
+        setAccountItems([]);
+        setRenderedItems([]);
+        setSelectedItemId("");
         return;
       }
 
@@ -107,7 +238,16 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
           return;
         }
 
-        setSavedItems(data.items_list.map(itemFromBackendToFrontend));
+        const backendItems = Array.isArray(data)
+          ? data
+          : data.items_list || data.items || [];
+
+        const frontendItems = backendItems.map(itemFromBackendToFrontend);
+        const firstItem = frontendItems[0] || null;
+
+        setAccountItems(frontendItems);
+        setSelectedItemId(firstItem ? getItemId(firstItem) : "");
+        setRenderedItems(firstItem ? [itemToRenderedItem(firstItem)] : []);
       } catch (err) {
         console.error("Could not load items.", err);
       }
@@ -131,22 +271,42 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
           </button>
         </div>
 
+        <select
+          className="item-select"
+          value={selectedItemId}
+          onChange={handleSelectItem}
+          disabled={!token || accountItems.length === 0}
+        >
+          <option value="">
+            {token ? "Select an item" : "Log in to view items"}
+          </option>
+
+          {accountItems.map((item) => (
+            <option key={getItemId(item)} value={getItemId(item)}>
+              {item.name || "Unnamed Item"}
+            </option>
+          ))}
+        </select>
+
+        <button
+          className="delete-item-button"
+          onClick={() => handleDeleteItemFromDatabase()}
+          disabled={!selectedItem}
+        >
+          Delete
+        </button>
+
         <div className="item-black"></div>
       </div>
 
       <div className="items-panel">
-        <div className="drop-box">
-          <div className="drop-box-label">
-            Where Item is
-            <br />
-            to drag
-          </div>
-
-          {savedItems.map((item, index) => (
+        <div className="drop-box" aria-label="Items available to drag">
+          {renderedItems.map((item) => (
             <SpawnedItem
-              key={item.id || item._id || `${item.name}-${index}`}
+              key={item.renderedId}
               item={item}
-              onDelete={handleDeleteItem}
+              onDelete={handleRemoveItemFromPage}
+              onFirstDrag={handleSpawnItemOnPage}
               onPlaceItem={onPlaceItem}
               onRemoveItemFromMatrix={onRemoveItemFromMatrix}
               onCanPlaceItem={onCanPlaceItem}
@@ -154,12 +314,18 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
           ))}
         </div>
 
-        <div className="items-line"></div>
-
-        <div className="delete-box">
-          Drag Item to
-          <br />
-          Delete here
+        <div
+          className="delete-box"
+          aria-label="Drag item here to remove it from the page"
+          title="Drag item here to remove it from the page"
+        >
+          <svg className="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6h18" />
+            <path d="M8 6V4h8v2" />
+            <path d="M6 6l1 16h10l1-16" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+          </svg>
         </div>
       </div>
 
@@ -167,7 +333,6 @@ function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
         <Popout
           onClose={() => setShowWhiteBox(false)}
           onSave={handleSaveItem}
-          onDelete={handleDeleteItem}
         />
       )}
     </div>

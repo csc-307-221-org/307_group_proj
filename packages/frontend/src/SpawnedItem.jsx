@@ -3,6 +3,7 @@ import { useState } from "react";
 function SpawnedItem({
   item,
   onDelete,
+  onFirstDrag,
   onPlaceItem,
   onRemoveItemFromMatrix,
   onCanPlaceItem,
@@ -52,15 +53,19 @@ function SpawnedItem({
   function startDrag(e) {
     e.preventDefault();
 
-    if (onRemoveItemFromMatrix) {
-      onRemoveItemFromMatrix(item);
-    }
-
     const itemElement = e.currentTarget;
     const startRect = itemElement.getBoundingClientRect();
 
     const offsetX = e.clientX - startRect.left;
     const offsetY = e.clientY - startRect.top;
+
+    let didMove = false;
+    let replacementSpawned = moved;
+    const wasAlreadyMoved = moved;
+
+    if (wasAlreadyMoved && onRemoveItemFromMatrix) {
+      onRemoveItemFromMatrix(item);
+    }
 
     setPos({
       x: startRect.left,
@@ -68,50 +73,85 @@ function SpawnedItem({
     });
 
     setDragging(true);
-    setMoved(true);
 
-    function moveItem(moveEvent) {
-      setPos({
-        x: moveEvent.clientX - offsetX,
-        y: moveEvent.clientY - offsetY,
-      });
+    function getItemRect(x, y) {
+      return {
+        left: x,
+        top: y,
+        right: x + itemElement.offsetWidth,
+        bottom: y + itemElement.offsetHeight,
+      };
     }
 
-    function cleanup() {
-      window.removeEventListener("mousemove", moveItem);
-      window.removeEventListener("mouseup", stopDrag);
+    function getDeleteBox() {
+      return document.querySelector(".delete-box");
+    }
+
+    function setDeleteBoxHighlight(isActive) {
+      const deleteBox = getDeleteBox();
+
+      if (!deleteBox) {
+        return;
+      }
+
+      deleteBox.classList.toggle("delete-box-active", isActive);
+    }
+
+    function moveItem(moveEvent) {
+      didMove = true;
+
+      const nextX = moveEvent.clientX - offsetX;
+      const nextY = moveEvent.clientY - offsetY;
+
+      if (!replacementSpawned) {
+        onFirstDrag?.(item);
+        replacementSpawned = true;
+        setMoved(true);
+      }
+
+      setPos({
+        x: nextX,
+        y: nextY,
+      });
+
+      const deleteBox = getDeleteBox();
+
+      if (!deleteBox) {
+        return;
+      }
+
+      const isOverDeleteBox = isTouching(
+        getItemRect(nextX, nextY),
+        deleteBox.getBoundingClientRect(),
+      );
+
+      setDeleteBoxHighlight(isOverDeleteBox);
     }
 
     function stopDrag(upEvent) {
+      setDragging(false);
+
+      if (!didMove) {
+        cleanup();
+        return;
+      }
+
       const finalX = upEvent.clientX - offsetX;
       const finalY = upEvent.clientY - offsetY;
 
-      const itemRect = {
-        left: finalX,
-        top: finalY,
-        right: finalX + itemElement.offsetWidth,
-        bottom: finalY + itemElement.offsetHeight,
-      };
+      const itemRect = getItemRect(finalX, finalY);
+      const deleteBox = getDeleteBox();
 
-      const deleteBox = document.querySelector(".delete-box");
+      const shouldDelete =
+        deleteBox && isTouching(itemRect, deleteBox.getBoundingClientRect());
 
-      if (
-        deleteBox &&
-        isTouching(itemRect, deleteBox.getBoundingClientRect())
-      ) {
-        cleanup();
-        setDragging(false);
-
+      if (shouldDelete) {
         if (onRemoveItemFromMatrix) {
           onRemoveItemFromMatrix(item);
         }
 
-        setTimeout(() => {
-          if (onDelete) {
-            onDelete(item);
-          }
-        }, 0);
-
+        onDelete?.(item);
+        cleanup();
         return;
       }
 
@@ -119,7 +159,6 @@ function SpawnedItem({
 
       if (!gridBox) {
         setPos({ x: finalX, y: finalY });
-        setDragging(false);
         cleanup();
         return;
       }
@@ -128,7 +167,6 @@ function SpawnedItem({
 
       if (!isTouching(itemRect, gridRect)) {
         setPos({ x: finalX, y: finalY });
-        setDragging(false);
         cleanup();
         return;
       }
@@ -160,34 +198,42 @@ function SpawnedItem({
         row + shapeRows <= gridSize.rows &&
         col + shapeCols <= gridSize.cols;
 
-      if (fits) {
-        const spotIsOpen = onCanPlaceItem
-          ? onCanPlaceItem(item, row, col)
-          : true;
-
-        if (spotIsOpen) {
-          setPos({
-            x: gridStartX + col * cellSize,
-            y: gridStartY + row * cellSize - nameHeight - nameMargin,
-          });
-
-          if (onPlaceItem) {
-            onPlaceItem(item, row, col);
-          }
-        } else {
-          alert("That spot already has an item.");
-
-          setPos({
-            x: finalX,
-            y: finalY,
-          });
-        }
-      } else {
+      if (!fits) {
         setPos({ x: finalX, y: finalY });
+        cleanup();
+        return;
       }
 
-      setDragging(false);
+      const spotIsOpen = onCanPlaceItem ? onCanPlaceItem(item, row, col) : true;
+
+      if (!spotIsOpen) {
+        alert("That spot already has an item.");
+
+        setPos({
+          x: finalX,
+          y: finalY,
+        });
+
+        cleanup();
+        return;
+      }
+
+      setPos({
+        x: gridStartX + col * cellSize,
+        y: gridStartY + row * cellSize - nameHeight - nameMargin,
+      });
+
+      if (onPlaceItem) {
+        onPlaceItem(item, row, col);
+      }
+
       cleanup();
+    }
+
+    function cleanup() {
+      setDeleteBoxHighlight(false);
+      window.removeEventListener("mousemove", moveItem);
+      window.removeEventListener("mouseup", stopDrag);
     }
 
     window.addEventListener("mousemove", moveItem);
