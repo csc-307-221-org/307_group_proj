@@ -213,7 +213,7 @@ body {
   right: 2vmin;
   top: 18vmin;
 
-  width: clamp(360px, 34vw, 560px);
+  width: clamp(360px, 34vw, 500px);
   max-width: calc(100vw - 4vmin);
 
   color: black;
@@ -307,7 +307,6 @@ body {
   padding: clamp(14px, 2vmin, 28px);
 
   border: 1px solid var(--color-primary);
-
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
