@@ -1,6 +1,13 @@
 import { useState } from "react";
 
-function SpawnedItem({ item, onDelete, onFirstDrag }) {
+function SpawnedItem({
+  item,
+  onDelete,
+  onFirstDrag,
+  onPlaceItem,
+  onRemoveItemFromMatrix,
+  onCanPlaceItem,
+}) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const [moved, setMoved] = useState(false);
@@ -54,6 +61,16 @@ function SpawnedItem({ item, onDelete, onFirstDrag }) {
 
     let didMove = false;
     let replacementSpawned = moved;
+    const wasAlreadyMoved = moved;
+
+    if (wasAlreadyMoved && onRemoveItemFromMatrix) {
+      onRemoveItemFromMatrix(item);
+    }
+
+    setPos({
+      x: startRect.left,
+      y: startRect.top,
+    });
 
     setDragging(true);
 
@@ -128,9 +145,11 @@ function SpawnedItem({ item, onDelete, onFirstDrag }) {
       const shouldDelete =
         deleteBox && isTouching(itemRect, deleteBox.getBoundingClientRect());
 
-      setDeleteBoxHighlight(false);
-
       if (shouldDelete) {
+        if (onRemoveItemFromMatrix) {
+          onRemoveItemFromMatrix(item);
+        }
+
         onDelete?.(item);
         cleanup();
         return;
@@ -145,6 +164,13 @@ function SpawnedItem({ item, onDelete, onFirstDrag }) {
       }
 
       const gridRect = gridBox.getBoundingClientRect();
+
+      if (!isTouching(itemRect, gridRect)) {
+        setPos({ x: finalX, y: finalY });
+        cleanup();
+        return;
+      }
+
       const gridStyles = getComputedStyle(gridBox);
       const cellSize = getCellSize();
       const gridSize = getGridSize(gridBox);
@@ -172,13 +198,33 @@ function SpawnedItem({ item, onDelete, onFirstDrag }) {
         row + shapeRows <= gridSize.rows &&
         col + shapeCols <= gridSize.cols;
 
-      if (fits) {
-        setPos({
-          x: gridStartX + col * cellSize,
-          y: gridStartY + row * cellSize - nameHeight - nameMargin,
-        });
-      } else {
+      if (!fits) {
         setPos({ x: finalX, y: finalY });
+        cleanup();
+        return;
+      }
+
+      const spotIsOpen = onCanPlaceItem ? onCanPlaceItem(item, row, col) : true;
+
+      if (!spotIsOpen) {
+        alert("That spot already has an item.");
+
+        setPos({
+          x: finalX,
+          y: finalY,
+        });
+
+        cleanup();
+        return;
+      }
+
+      setPos({
+        x: gridStartX + col * cellSize,
+        y: gridStartY + row * cellSize - nameHeight - nameMargin,
+      });
+
+      if (onPlaceItem) {
+        onPlaceItem(item, row, col);
       }
 
       cleanup();
@@ -207,6 +253,7 @@ function SpawnedItem({ item, onDelete, onFirstDrag }) {
               margin: 0,
               zIndex: 99999,
               cursor: dragging ? "grabbing" : "grab",
+              transform: "scale(1)",
             }
           : undefined
       }

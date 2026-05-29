@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useWindowScale from "./Windowscale";
 
-function Grid() {
-  const [rows, setRows] = useState(4);
-  const [cols, setCols] = useState(4);
-
+function Grid({ rows, cols, setRows, setCols, placedItems }) {
   const safeRows = Number(rows) || 1;
   const safeCols = Number(cols) || 1;
 
@@ -50,7 +47,7 @@ function Grid() {
             <span>X</span>
             <input
               min="1"
-              max="`10"
+              max="10"
               type="number"
               value={cols}
               onChange={(e) => handleChange(e, setCols)}
@@ -72,18 +69,43 @@ function Grid() {
             gridTemplateRows: `repeat(${safeRows}, ${cellSize}px)`,
           }}
         >
-          {items.map((_, i) => (
-            <div
-              className="grid-item"
-              key={i}
-              style={{
-                width: `${cellSize}px`,
-                height: `${cellSize}px`,
-              }}
-            >
-              {i + 1}
-            </div>
-          ))}
+          {items.map((_, i) => {
+            const row = Math.floor(i / safeCols);
+            const col = i % safeCols;
+
+            const placedItem = placedItems[row]?.[col];
+
+            return (
+              <div
+                className="grid-item"
+                key={i}
+                style={{
+                  width: `${cellSize}px`,
+                  height: `${cellSize}px`,
+                }}
+              >
+                {placedItem ? (
+                  <div className="grid-item-info">
+                    <div>{placedItem.name}</div>
+
+                    <div>
+                      Piece: [{placedItem.itemPiece.row},{" "}
+                      {placedItem.itemPiece.col}]
+                    </div>
+
+                    <div>
+                      Size: {placedItem.itemSize.length}x
+                      {placedItem.itemSize[0]?.length}
+                    </div>
+
+                    <div>{placedItem.description}</div>
+                  </div>
+                ) : (
+                  i + 1
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

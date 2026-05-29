@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
-function Items({ token }) {
+function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [accountItems, setAccountItems] = useState([]);
   const [renderedItems, setRenderedItems] = useState([]);
@@ -307,6 +307,9 @@ function Items({ token }) {
               item={item}
               onDelete={handleRemoveItemFromPage}
               onFirstDrag={handleSpawnItemOnPage}
+              onPlaceItem={onPlaceItem}
+              onRemoveItemFromMatrix={onRemoveItemFromMatrix}
+              onCanPlaceItem={onCanPlaceItem}
             />
           ))}
         </div>

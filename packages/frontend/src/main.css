@@ -58,6 +58,15 @@ body {
   color: white;
   box-sizing: border-box;
 }
+.grid-item-info {
+  font-size: 10px;
+  text-align: center;
+  color: black;
+  overflow: hidden;
+  padding: 2px;
+  box-sizing: border-box;
+  line-height: 1.1;
+}
 
 /* CONTROLS */
 .controls {
@@ -94,7 +103,7 @@ body {
 }
 
 .grid-item {
-  background: solid rgb(255, 255, 255);
+  background: rgb(255, 255, 255);
   border: 1px solid var(--color-primary);
   display: grid;
   place-items: center;
@@ -156,6 +165,11 @@ body {
   place-items: center;
   position: relative;
   z-index: 10;
+}
+.preset-box {
+  border: none;
+  cursor: pointer;
+  font: inherit;
 }
 
 /* TOP BAR */
@@ -369,11 +383,13 @@ body {
 .white-popup-box {
   position: fixed;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  right: 2vw;
+  transform: translateY(-50%);
 
-  width: fit-content;
-  height: fit-content;
+  width: 620px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
 
   background: pink;
   border: 2px solid black;
@@ -416,15 +432,18 @@ body {
 
 .middle-row {
   display: flex;
-  gap: 30px;
+  gap: 20px;
 
   margin-top: 30px;
   align-items: flex-start;
+
+  flex-wrap: nowrap;
 }
 
 .popout-grid {
-  width: 350px;
-  height: 350px;
+  width: 250px;
+  height: 250px;
+  flex-shrink: 0;
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -445,8 +464,9 @@ body {
 }
 
 .description-input {
-  width: 350px;
+  width: 250px;
   height: 160px;
+  flex-shrink: 0;
 
   font-size: 18px;
   padding: 8px;
@@ -519,4 +539,301 @@ body {
 .spawned-shape-cell.empty {
   background: transparent;
   border: 1px solid transparent;
+}
+
+/* drop box */
+.drop-box {
+  padding: 12px;
+
+  font-size: clamp(16px, 2.2vmin, 28px);
+
+  border: 1px solid #333;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.drop-box .spawned-shape:not([style*="position: fixed"]) {
+  transform: scale(0.6);
+  transform-origin: top left;
+  margin-bottom: -20px;
+  margin-right: -20px;
+}
+
+.drop-box-label {
+  margin-bottom: 8px;
+}
+
+/* ========================================
+   INVENTORY UI ANIMATIONS
+   ======================================== */
+
+/* 
+   UI LOAD ANIMATION
+   - UI fades into the screen
+   - Panels slightly rise upward while appearing
+   - Creates a smooth, cinematic inventory startup feel
+*/
+
+.grid-box,
+.top-bar {
+  animation: uiBootIn 420ms ease-out both;
+}
+
+@keyframes uiBootIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 
+   GRID CELL HOVER EFFECTS
+   - Inventory slots slightly compress when hovered
+   - Red glow appears around hovered cells
+ */
+
+.grid-item {
+  transition:
+    background 140ms ease,
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.grid-item:hover {
+  background: #d9d9d9;
+
+  box-shadow: inset 0 0 10px rgba(237, 70, 70, 0.6);
+
+  transform: scale(0.96);
+}
+
+/* 
+   BUTTON ANIMATIONS
+   - Buttons slightly lift upward while hovered
+   - Red glow appears around active controls
+   - Clicking creates a pressed-in effect
+ */
+
+.item-red button,
+.presets-buttons button,
+.save-item-button {
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    filter 120ms ease;
+}
+
+.item-red button:hover,
+.presets-buttons button:hover,
+.save-item-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 0 10px rgba(237, 70, 70, 0.6);
+
+  filter: brightness(1.08);
+}
+
+.item-red button:active,
+.presets-buttons button:active,
+.save-item-button:active {
+  transform: scale(0.96);
+}
+
+/* 
+   POPUP OPEN ANIMATION
+   - Popup smoothly fades and expands into view
+ */
+
+.white-popup-box {
+  animation: popupOpen 500ms ease-out both;
+}
+
+@keyframes popupOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-48%) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* 
+   POPUP CELL HOVER EFFECTS
+   - Grid cells shrink slightly while hovered
+   - Selected cells pulse outward briefly
+   - Red highlights active shape selections
+*/
+
+.popout-cell {
+  transition:
+    background 120ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.popout-cell:hover {
+  transform: scale(0.94);
+
+  box-shadow: inset 0 0 10px rgba(237, 70, 70, 0.7);
+}
+
+.popout-cell.selected {
+  background: var(--color-accent);
+
+  animation: cellSelected 150ms ease-out;
+}
+
+@keyframes cellSelected {
+  from {
+    transform: scale(0.8);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+/* 
+   DRAGGABLE ITEM HOVER EFFECTS
+   - Items slightly enlarge while hovered
+   - Soft red glow surrounds draggable objects
+   - Creates stronger visual focus on inventory items
+ */
+
+.spawned-shape {
+  transition:
+    transform 120ms ease,
+    filter 120ms ease;
+}
+
+.spawned-shape:hover {
+  transform: scale(1.03);
+
+  filter: drop-shadow(0 0 8px rgba(237, 70, 70, 0.7));
+}
+
+/* 
+   ITEM CELL POLISH
+   - Item blocks have darker inner shadows for depth
+   - Dragged items brighten slightly during interaction
+   - Red highlights intensify while moving objects
+ */
+
+.spawned-shape-cell.filled {
+  transition:
+    background 120ms ease,
+    box-shadow 120ms ease;
+
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.55);
+}
+
+.spawned-shape:active .spawned-shape-cell.filled {
+  background: #ff5959;
+
+  box-shadow: 0 0 10px rgba(237, 70, 70, 0.9);
+}
+
+/* 
+   INPUT FIELD EFFECTS
+   - Input fields glow softly while typing
+   - Focused fields become visually brighter
+   - Adds subtle responsiveness to typing areas
+ */
+
+.controls input,
+.top-right input,
+.name-input,
+.description-input {
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.controls input:focus,
+.top-right input:focus,
+.name-input:focus,
+.description-input:focus {
+  outline: none;
+
+  border-color: var(--color-accent);
+
+  box-shadow: 0 0 10px rgba(237, 70, 70, 0.5);
+}
+
+/* 
+   PRESET BOX HOVER EFFECTS
+   - Preset slots slightly slide sideways while hovered
+   - Soft glow appears around hovered preset panels
+   - Gives side menu more movement
+*/
+
+.preset-box {
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.preset-box:hover {
+  transform: translateX(4px);
+
+  background: #d5d5d5;
+
+  box-shadow: 0 0 10px rgba(237, 70, 70, 0.4);
+}
+
+/* 
+   DELETE BOX FEEDBACK
+   - Delete area brightens while hovered
+   - Red glow intensifies around danger zone
+   - Slight scaling effect increases visual emphasis
+   - Makes destructive actions more visually noticeable
+*/
+
+.delete-box {
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.delete-box:hover {
+  background: #d18b8b;
+
+  box-shadow: 0 0 14px rgba(237, 70, 70, 0.8);
+
+  transform: scale(1.02);
+}
+
+/* 
+   CLOSE BUTTON EFFECTS
+   - Close button rotates while hovered
+   - Red tint highlights active interaction
+ */
+
+.close-popup {
+  transition:
+    transform 120ms ease,
+    color 120ms ease;
+}
+
+.close-popup:hover {
+  transform: rotate(90deg) scale(1.1);
+
+  color: var(--color-accent);
 }
