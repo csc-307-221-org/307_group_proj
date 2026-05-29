@@ -26,6 +26,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
 app.use(express.json());
 
 // connect to our MongoDB database using the link in .env
