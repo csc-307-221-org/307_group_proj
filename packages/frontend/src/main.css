@@ -565,10 +565,6 @@ body {
   margin-right: -20px;
 }
 
-.drop-box-label {
-  margin-bottom: 8px;
-}
-
 /* ========================================
    INVENTORY UI ANIMATIONS
    ======================================== */
@@ -626,15 +622,18 @@ body {
  */
 
 .item-red button,
+.delete-item-button,
 .presets-buttons button,
 .save-item-button {
   transition:
     transform 120ms ease,
     box-shadow 120ms ease,
-    filter 120ms ease;
+    filter 120ms ease,
+    background-color 120ms ease;
 }
 
 .item-red button:hover,
+.delete-item-button:hover:not(:disabled),
 .presets-buttons button:hover,
 .save-item-button:hover {
   transform: translateY(-2px);
@@ -645,9 +644,27 @@ body {
 }
 
 .item-red button:active,
+.delete-item-button:active:not(:disabled),
 .presets-buttons button:active,
 .save-item-button:active {
   transform: scale(0.96);
+}
+
+.delete-item-button {
+  background: #eeeeee;
+  border: 2px solid var(--color-primary);
+  color: var(--color-text-2);
+}
+
+.delete-item-button:hover:not(:disabled) {
+  background: #ffd6d6;
+  border-color: var(--color-accent);
+}
+
+.delete-item-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: grayscale(0.4);
 }
 
 /* 
@@ -722,6 +739,12 @@ body {
 
 .spawned-shape:hover {
   transform: scale(1.03);
+
+  filter: drop-shadow(0 0 8px rgba(237, 70, 70, 0.7));
+}
+
+.drop-box .spawned-shape:not([style*="position: fixed"]):hover {
+  transform: scale(0.64);
 
   filter: drop-shadow(0 0 8px rgba(237, 70, 70, 0.7));
 }
@@ -807,15 +830,28 @@ body {
 
 .delete-box {
   transition:
-    background 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
 }
 
 .delete-box:hover {
   background: #d18b8b;
+  border-color: var(--color-accent);
 
   box-shadow: 0 0 14px rgba(237, 70, 70, 0.8);
+
+  transform: scale(1.02);
+}
+
+.delete-box.delete-box-active {
+  background: #2b1717;
+  border-color: var(--color-accent);
+
+  box-shadow:
+    0 0 12px rgba(237, 70, 70, 0.8),
+    0 0 28px rgba(237, 70, 70, 0.45);
 
   transform: scale(1.02);
 }
