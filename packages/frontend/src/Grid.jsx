@@ -72,13 +72,12 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
           {items.map((_, i) => {
             const row = Math.floor(i / safeCols);
             const col = i % safeCols;
-
-            const placedItem = placedItems[row]?.[col];
+            const placedItem = placedItems?.[row]?.[col];
 
             return (
               <div
                 className="grid-item"
-                key={i}
+                key={`${row}-${col}`}
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
@@ -93,10 +92,7 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
                       {placedItem.itemPiece.col}]
                     </div>
 
-                    <div>
-                      Size: {placedItem.itemSize.length}x
-                      {placedItem.itemSize[0]?.length}
-                    </div>
+                    <div>Size: {placedItem.itemSize}</div>
 
                     <div>{placedItem.description}</div>
                   </div>
