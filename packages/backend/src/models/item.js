@@ -21,7 +21,7 @@ const ItemSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    
+
     imageData: {
       type: String,
       default: "",

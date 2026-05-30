@@ -84,18 +84,18 @@ function Popout({ onClose, onSave }) {
           onChange={(e) => setItemName(e.target.value)}
         />
         <label className="image-picker-label">
-            Choose Image
-            <input
-              className="image-picker-input"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </label>
+          Choose Image
+          <input
+            className="image-picker-input"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </label>
 
-          {imageData && (
-            <img className="image-preview" src={imageData} alt="Item preview" />
-          )}
+        {imageData && (
+          <img className="image-preview" src={imageData} alt="Item preview" />
+        )}
 
         <div className="middle-row">
           <div className="popout-grid">
