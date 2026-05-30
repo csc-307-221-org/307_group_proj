@@ -27,16 +27,34 @@ function HomePage({ token }) {
     );
   }, [rows, cols]);
 
-  function sameItem(a, b) {
-    if (!a || !b) return false;
+  function getItemInstanceKey(item) {
+    if (!item) {
+      return "";
+    }
 
-    if (
-      a.id !== undefined &&
-      a.id !== null &&
-      b.id !== undefined &&
-      b.id !== null
-    ) {
-      return a.id === b.id;
+    if (item.renderedId !== undefined && item.renderedId !== null) {
+      return `rendered:${item.renderedId}`;
+    }
+
+    const databaseId = item.id || item._id;
+
+    if (databaseId !== undefined && databaseId !== null) {
+      return `database:${databaseId}`;
+    }
+
+    return "";
+  }
+
+  function sameItem(a, b) {
+    if (!a || !b) {
+      return false;
+    }
+
+    const aKey = getItemInstanceKey(a);
+    const bKey = getItemInstanceKey(b);
+
+    if (aKey && bKey) {
+      return aKey === bKey;
     }
 
     return a === b;
