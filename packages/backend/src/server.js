@@ -16,16 +16,7 @@ const port = process.env.PORT || 8000;
 const TEMP_OWNER_ID = "676767676767676767676767";
 
 // lets us read JSON data from requests
-app.use(
-  cors({
-    origin: [
-      "https://ambitious-mushroom-0504fd510.azurestaticapps.net",
-      "http://localhost:5173",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  }),
-);
+app.use(cors());
 
 app.use(express.json());
 
