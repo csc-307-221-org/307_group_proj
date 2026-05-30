@@ -26,6 +26,7 @@ function updateItemById(id, ownerId, item) {
     tags: item.tags,
     shape: item.shape,
     weight: item.weight,
+    imageData: item.imageData,
   };
 
   return itemModel.findOneAndUpdate(

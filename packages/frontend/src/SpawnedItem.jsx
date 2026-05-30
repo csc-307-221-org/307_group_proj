@@ -267,16 +267,32 @@ function SpawnedItem({
           gridTemplateRows: `repeat(${shapeRows}, var(--matrix-cell-size))`,
         }}
       >
-        {cells.map((cell, index) => (
-          <div
-            key={index}
-            className="spawned-shape-cell filled"
-            style={{
-              gridColumn: cell.col - minCol + 1,
-              gridRow: cell.row - minRow + 1,
-            }}
-          />
-        ))}
+        {cells.map((cell, index) => {
+          const row = cell.row - minRow;
+          const col = cell.col - minCol;
+
+          const imageStyle = item.imageData
+            ? {
+                backgroundImage: `url(${item.imageData})`,
+                backgroundSize: `${shapeCols * 100}% ${shapeRows * 100}%`,
+                backgroundPosition: `${
+                  shapeCols === 1 ? 0 : (col / (shapeCols - 1)) * 100
+                }% ${shapeRows === 1 ? 0 : (row / (shapeRows - 1)) * 100}%`,
+              }
+            : {};
+
+          return (
+            <div
+              key={index}
+              className="spawned-shape-cell filled"
+              style={{
+                gridRow: row + 1,
+                gridColumn: col + 1,
+                ...imageStyle,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

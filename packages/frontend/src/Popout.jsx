@@ -7,6 +7,7 @@ function Popout({ onClose, onSave }) {
   const [clickedCells, setClickedCells] = useState([]);
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
+  const [imageData, setImageData] = useState("");
 
   function handleCellClick(row, col) {
     const cell = { row: row, col: col };
@@ -26,6 +27,27 @@ function Popout({ onClose, onSave }) {
     }
   }
 
+  function handleImageChange(event) {
+    const file = event.target.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose an image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImageData(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
   function cellsToShape(cells, rows, cols) {
     return Array.from({ length: rows }, (_, row) =>
       Array.from({ length: cols }, (_, col) =>
@@ -38,6 +60,7 @@ function Popout({ onClose, onSave }) {
     const savedItem = {
       name: itemName,
       description: description,
+      imageData: imageData,
       tags: [],
       weight: 0,
       shape: cellsToShape(clickedCells, rows, cols),
@@ -60,6 +83,19 @@ function Popout({ onClose, onSave }) {
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
         />
+        <label className="image-picker-label">
+            Choose Image
+            <input
+              className="image-picker-input"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </label>
+
+          {imageData && (
+            <img className="image-preview" src={imageData} alt="Item preview" />
+          )}
 
         <div className="middle-row">
           <div className="popout-grid">
