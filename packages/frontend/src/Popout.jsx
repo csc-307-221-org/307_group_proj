@@ -41,8 +41,35 @@ function Popout({ onClose, onSave }) {
 
     const reader = new FileReader();
 
-    reader.onloadend = () => {
-      setImageData(reader.result);
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 500;
+
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height && width > maxSize) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedImageData = canvas.toDataURL("image/jpeg", 0.7);
+        setImageData(compressedImageData);
+      };
+
+      img.src = reader.result;
     };
 
     reader.readAsDataURL(file);
