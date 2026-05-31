@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { putItemInPlace } from "./PutinPlace";
 
 function SpawnedItem({
   item,
@@ -7,6 +8,7 @@ function SpawnedItem({
   onPlaceItem,
   onRemoveItemFromMatrix,
   onCanPlaceItem,
+  placedItems,
 }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -21,6 +23,20 @@ function SpawnedItem({
 
   const shapeRows = maxRow - minRow + 1;
   const shapeCols = maxCol - minCol + 1;
+
+  useEffect(() => {
+    function snap() {
+      putItemInPlace(item, placedItems, setPos);
+    }
+
+    snap();
+
+    window.addEventListener("resize", snap);
+
+    return () => {
+      window.removeEventListener("resize", snap);
+    };
+  }, [item, placedItems]);
 
   function getCellSize() {
     return (

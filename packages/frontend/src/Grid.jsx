@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useWindowScale from "./Windowscale";
+import useWindowScale from "./Windowscale.js";
 
 function Grid({ rows, cols, setRows, setCols, placedItems }) {
   const safeRows = Number(rows) || 1;

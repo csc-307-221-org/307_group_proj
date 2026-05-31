@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ReactDOMClient from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+
 import "./main.css";
 
 import Grid from "./Grid.jsx";
@@ -238,6 +239,7 @@ function HomePage({ token }) {
         onPlaceItem={handlePlaceItem}
         onCanPlaceItem={canPlaceItem}
         onRemoveItemFromMatrix={handleRemoveItemFromMatrix}
+        placedItems={placedItems}
       />
     </div>
   );
