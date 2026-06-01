@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import Popout from "./Popout";
 import SpawnedItem from "./SpawnedItem";
 
-function Items({ token, onPlaceItem, onRemoveItemFromMatrix, onCanPlaceItem, placedItems }) {
+function Items({
+  token,
+  onPlaceItem,
+  onRemoveItemFromMatrix,
+  onCanPlaceItem,
+  placedItems,
+}) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [accountItems, setAccountItems] = useState([]);
   const [renderedItems, setRenderedItems] = useState([]);

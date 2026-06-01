@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { putItemInPlace } from "./PutinPlace";
 
 function SpawnedItem({
