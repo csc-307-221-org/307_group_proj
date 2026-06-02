@@ -15,6 +15,9 @@ import Presets from "./Presets.jsx";
 import Login from "./Login.jsx";
 import Items from "./Items.jsx";
 
+const API_URL =
+  "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net";
+
 function HomePage({ token }) {
   const [rows, setRows] = useState(4);
   const [cols, setCols] = useState(4);
@@ -24,6 +27,12 @@ function HomePage({ token }) {
   );
 
   const [presets, setPresets] = useState([]);
+
+  const [presetRenderState, setPresetRenderState] = useState({
+    version: 0,
+    items: [],
+  });
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlacedItems((current) =>
@@ -32,6 +41,40 @@ function HomePage({ token }) {
       ),
     );
   }, [rows, cols]);
+
+  useEffect(() => {
+    async function loadPresetsFromDatabase() {
+      if (!token) {
+        setPresets([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/backpack`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Could not load presets.", data);
+          return;
+        }
+
+        const backendPresets = Array.isArray(data)
+          ? data
+          : data.backpacks_list || data.backpacks || [];
+
+        setPresets(backendPresets);
+      } catch (err) {
+        console.error("Could not load presets.", err);
+      }
+    }
+
+    loadPresetsFromDatabase();
+  }, [token]);
 
   function getItemInstanceKey(item) {
     if (!item) {
@@ -64,6 +107,80 @@ function HomePage({ token }) {
     }
 
     return a === b;
+  }
+
+  function shapeToCells(shape) {
+    if (!Array.isArray(shape)) {
+      return [];
+    }
+
+    return shape.flatMap((rowArray, row) =>
+      rowArray
+        .map((value, col) => (value === 1 ? { row, col } : null))
+        .filter(Boolean),
+    );
+  }
+
+  function cellsToShape(cells) {
+    if (!Array.isArray(cells) || cells.length === 0) {
+      return [[1]];
+    }
+
+    const minRow = Math.min(...cells.map((cell) => cell.row));
+    const maxRow = Math.max(...cells.map((cell) => cell.row));
+    const minCol = Math.min(...cells.map((cell) => cell.col));
+    const maxCol = Math.max(...cells.map((cell) => cell.col));
+
+    const shape = Array.from({ length: maxRow - minRow + 1 }, () =>
+      Array(maxCol - minCol + 1).fill(0),
+    );
+
+    cells.forEach((cell) => {
+      shape[cell.row - minRow][cell.col - minCol] = 1;
+    });
+
+    return shape;
+  }
+
+  function rotateShapeMatrix(shape, rotation) {
+    if (rotation === 0) {
+      return shape;
+    }
+
+    if (rotation === 90) {
+      return shape[0].map((_, col) => shape.map((row) => row[col]).reverse());
+    }
+
+    if (rotation === 180) {
+      return shape.map((row) => [...row].reverse()).reverse();
+    }
+
+    if (rotation === 270) {
+      return shape[0].map((_, col) =>
+        shape.map((row) => row[row.length - 1 - col]),
+      );
+    }
+
+    return shape;
+  }
+
+  function makeObjectId() {
+    const bytes = new Uint8Array(12);
+
+    if (typeof window !== "undefined" && window.crypto?.getRandomValues) {
+      window.crypto.getRandomValues(bytes);
+      return Array.from(bytes)
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    const timeHex = Date.now().toString(16).padStart(12, "0").slice(-12);
+    const randomHex = Math.floor(Math.random() * 0xffffffffffff)
+      .toString(16)
+      .padStart(12, "0")
+      .slice(-12);
+
+    return `${timeHex}${randomHex}`;
   }
 
   function getShapeInfo(item) {
@@ -193,33 +310,232 @@ function HomePage({ token }) {
     );
   }
 
-  function saveCurrentPreset() {
-    const presetCopy = copyPlacedItems(placedItems);
+  function placedItemsToBackpackPayload(name) {
+    const itemsByKey = new Map();
 
-    setPresets((currentPresets) => [
-      ...currentPresets,
-      {
-        name: `Preset ${currentPresets.length + 1}`,
-        rows: rows,
-        cols: cols,
-        grid: presetCopy,
-      },
-    ]);
+    placedItems.forEach((rowArray, row) => {
+      rowArray.forEach((spot, col) => {
+        if (!spot?.fullItem) {
+          return;
+        }
+
+        const itemKey = getItemInstanceKey(spot.fullItem);
+
+        if (!itemKey || itemsByKey.has(itemKey)) {
+          return;
+        }
+
+        const fullItem = spot.fullItem;
+        const cells = fullItem.cells || shapeToCells(fullItem.shape);
+        const shape = Array.isArray(fullItem.shape)
+          ? fullItem.shape
+          : cellsToShape(cells);
+
+        itemsByKey.set(itemKey, {
+          backpackItemId: makeObjectId(),
+          topRow: row - spot.itemPiece.row,
+          topCol: col - spot.itemPiece.col,
+          item: {
+            name: fullItem.name || spot.name || "Unnamed Item",
+            description: fullItem.description || spot.description || "",
+            imageData: fullItem.imageData || "",
+            tags: Array.isArray(fullItem.tags) ? fullItem.tags : [],
+            shape,
+            weight: Number(fullItem.weight) || 0,
+          },
+        });
+      });
+    });
+
+    const items = Array.from(itemsByKey.values()).map((entry) => ({
+      _id: entry.backpackItemId,
+      ...entry.item,
+    }));
+
+    const placements = Array.from(itemsByKey.values()).map((entry) => ({
+      backpackItemId: entry.backpackItemId,
+      row: entry.topRow,
+      col: entry.topCol,
+      rotation: 0,
+    }));
+
+    const weightsum = items.reduce((total, item) => total + item.weight, 0);
+
+    return {
+      name,
+      description: "",
+      rows: Number(rows) || 1,
+      cols: Number(cols) || 1,
+      items,
+      placements,
+      weightsum,
+    };
   }
 
-  function deleteCurrentPreset(index) {
-    console.log("preset:", presets.at(index));
-    console.log("index:", index);
-    setPresets((presets) => {
-      return presets.filter((_, i) => i !== index);
+  function backpackToPresetState(backpack) {
+    const nextRows = Number(backpack.rows) || 1;
+    const nextCols = Number(backpack.cols) || 1;
+    const nextGrid = Array.from({ length: nextRows }, () =>
+      Array(nextCols).fill(null),
+    );
+
+    const nextRenderedItems = [];
+
+    const itemsById = new Map(
+      (backpack.items || []).map((item) => [String(item._id), item]),
+    );
+
+    (backpack.placements || []).forEach((placement) => {
+      const item = itemsById.get(String(placement.backpackItemId));
+
+      if (!item) {
+        return;
+      }
+
+      const renderedId = String(placement.backpackItemId);
+      const rotatedShape = rotateShapeMatrix(
+        item.shape || [[1]],
+        placement.rotation ?? 0,
+      );
+      const cells = shapeToCells(rotatedShape);
+      const fullItem = {
+        ...item,
+        id: String(item._id),
+        renderedId,
+        cells,
+        imageData: item.imageData || "",
+        hasBeenDragged: true,
+      };
+      const { itemSize } = getShapeInfo(fullItem);
+
+      nextRenderedItems.push(fullItem);
+
+      cells.forEach((cell) => {
+        const gridRow = placement.row + cell.row;
+        const gridCol = placement.col + cell.col;
+
+        if (!nextGrid[gridRow] || gridCol < 0 || gridCol >= nextCols) {
+          return;
+        }
+
+        nextGrid[gridRow][gridCol] = {
+          name: item.name,
+          description: item.description,
+          itemSize,
+          itemPiece: {
+            row: cell.row,
+            col: cell.col,
+          },
+          fullItem,
+        };
+      });
     });
+
+    return {
+      grid: nextGrid,
+      renderedItems: nextRenderedItems,
+    };
+  }
+
+  async function saveCurrentPreset() {
+    if (!token) {
+      alert("Please log in before saving presets.");
+      return;
+    }
+
+    const presetName = `Preset ${presets.length + 1}`;
+    const backpackPayload = placedItemsToBackpackPayload(presetName);
+
+    try {
+      const response = await fetch(`${API_URL}/backpack`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(backpackPayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Backend rejected preset:", data);
+        alert(data.error || "Error saving preset.");
+        return;
+      }
+
+      const createdPreset = data.backpack || data;
+
+      setPresets((currentPresets) => [...currentPresets, createdPreset]);
+    } catch (err) {
+      console.error("Could not save preset:", err);
+      alert("Could not connect to backend.");
+    }
+  }
+
+  async function deleteCurrentPreset(index) {
+    const preset = presets.at(index);
+    const presetId = preset?._id || preset?.id;
+
+    if (!presetId) {
+      setPresets((currentPresets) =>
+        currentPresets.filter((_, presetIndex) => presetIndex !== index),
+      );
+      return;
+    }
+
+    if (!token) {
+      alert("Please log in before deleting presets.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/backpack/${presetId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        let data = {};
+
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        console.error("Could not delete preset:", data);
+        alert(data.error || "Error deleting preset.");
+        return;
+      }
+
+      setPresets((currentPresets) =>
+        currentPresets.filter((_, presetIndex) => presetIndex !== index),
+      );
+    } catch (err) {
+      console.error("Could not delete preset:", err);
+      alert("Could not connect to backend.");
+    }
   }
 
   function loadPreset(preset) {
     setRows(preset.rows);
     setCols(preset.cols);
-    setPlacedItems(copyPlacedItems(preset.grid));
-    // copyPlacedItems(preset.grid).forEach();
+
+    if (preset.grid) {
+      setPlacedItems(copyPlacedItems(preset.grid));
+      return;
+    }
+
+    const nextPresetState = backpackToPresetState(preset);
+
+    setPlacedItems(nextPresetState.grid);
+    setPresetRenderState((currentState) => ({
+      version: currentState.version + 1,
+      items: nextPresetState.renderedItems,
+    }));
   }
 
   return (
@@ -245,6 +561,7 @@ function HomePage({ token }) {
         onCanPlaceItem={canPlaceItem}
         onRemoveItemFromMatrix={handleRemoveItemFromMatrix}
         placedItems={placedItems}
+        presetRenderState={presetRenderState}
       />
     </div>
   );
@@ -290,16 +607,13 @@ export default function MyApp() {
   }
 
   function loginUser(creds) {
-    return fetch(
-      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(creds),
+    return fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      body: JSON.stringify(creds),
+    })
       .then((response) => {
         if (response.status === 200) {
           response.json().then((payload) => {
@@ -316,16 +630,13 @@ export default function MyApp() {
   }
 
   function signupUser(creds) {
-    fetch(
-      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/signup",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(creds),
+    return fetch(`${API_URL}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      body: JSON.stringify(creds),
+    })
       .then((response) => {
         if (response.status === 201) {
           response.json().then((payload) => {

@@ -16,6 +16,11 @@ const BackpackItemSchema = new mongoose.Schema(
       default: "",
     },
 
+    imageData: {
+      type: String,
+      default: "",
+    },
+
     tags: {
       type: [String],
       default: [],
@@ -26,6 +31,7 @@ const BackpackItemSchema = new mongoose.Schema(
       required: true,
       validate: validateShapeMatrix,
     },
+
     weight: {
       type: Number,
       default: 0,

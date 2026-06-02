@@ -30,7 +30,7 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
           <div className="preset-box">No presets yet</div>
         ) : (
           presets.map((preset, index) => (
-            <React.Fragment key={index}>
+            <React.Fragment key={preset._id || preset.id || index}>
               <button
                 type="button"
                 className="preset-box"

@@ -8,6 +8,7 @@ function Items({
   onRemoveItemFromMatrix,
   onCanPlaceItem,
   placedItems,
+  presetRenderState,
 }) {
   const [showWhiteBox, setShowWhiteBox] = useState(false);
   const [accountItems, setAccountItems] = useState([]);
@@ -62,6 +63,19 @@ function Items({
 
   const selectedItem =
     accountItems.find((item) => getItemId(item) === selectedItemId) || null;
+
+  useEffect(() => {
+    if (!presetRenderState) {
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRenderedItems((currentItems) => {
+      const unplacedItems = currentItems.filter((item) => !item.hasBeenDragged);
+
+      return [...presetRenderState.items, ...unplacedItems];
+    });
+  }, [presetRenderState]);
 
   function replaceItemInDragBox(itemToRender) {
     if (!itemToRender) {
