@@ -37,9 +37,13 @@ function SpawnedItem({
     snap();
 
     window.addEventListener("resize", snap);
+    window.addEventListener("scroll", snap, true);
+    document.addEventListener("scroll", snap, true);
 
     return () => {
       window.removeEventListener("resize", snap);
+      window.removeEventListener("scroll", snap, true);
+      document.removeEventListener("scroll", snap, true);
     };
   }, [item, placedItems]);
 
@@ -268,14 +272,14 @@ function SpawnedItem({
       style={
         moved
           ? {
-              position: "fixed",
-              left: pos.x,
-              top: pos.y,
-              margin: 0,
-              zIndex: 99999,
-              cursor: dragging ? "grabbing" : "grab",
-              transform: "scale(1)",
-            }
+            position: "fixed",
+            left: pos.x,
+            top: pos.y,
+            margin: 0,
+            zIndex: 99999,
+            cursor: dragging ? "grabbing" : "grab",
+            transform: "scale(1)",
+          }
           : undefined
       }
     >
@@ -294,12 +298,11 @@ function SpawnedItem({
 
           const imageStyle = item.imageData
             ? {
-                backgroundImage: `url(${item.imageData})`,
-                backgroundSize: `${shapeCols * 100}% ${shapeRows * 100}%`,
-                backgroundPosition: `${
-                  shapeCols === 1 ? 0 : (col / (shapeCols - 1)) * 100
+              backgroundImage: `url(${item.imageData})`,
+              backgroundSize: `${shapeCols * 100}% ${shapeRows * 100}%`,
+              backgroundPosition: `${shapeCols === 1 ? 0 : (col / (shapeCols - 1)) * 100
                 }% ${shapeRows === 1 ? 0 : (row / (shapeRows - 1)) * 100}%`,
-              }
+            }
             : {};
 
           return (

@@ -26,6 +26,14 @@ body,
   --roundness: 8px;
 }
 
+html,
+body,
+#root,
+.app,
+.wrapper {
+  overscroll-behavior: none;
+}
+
 /* default solid color body */
 /*
 body {
