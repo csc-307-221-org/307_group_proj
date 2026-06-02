@@ -1,10 +1,35 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Login(props) {
   const [creds, setCreds] = useState({
     username: "",
     pwd: "",
   });
+
+  const isSignup = props.buttonLabel === "Sign Up";
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+
+    switch (name) {
+      case "username":
+        setCreds({ ...creds, username: value });
+        break;
+
+      case "password":
+        setCreds({ ...creds, pwd: value });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  function submitForm() {
+    props.handleSubmit(creds);
+    setCreds({ username: "", pwd: "" });
+  }
 
   return (
     <div
@@ -49,28 +74,19 @@ function Login(props) {
           value={props.buttonLabel || "Log In"}
           onClick={submitForm}
         />
+
+        {isSignup ? (
+          <p className="signup-text">
+            Already have an account? <Link to="/login">Log in</Link>
+          </p>
+        ) : (
+          <p className="signup-text">
+            Don't have an account? <Link to="/signup">Sign up</Link>
+          </p>
+        )}
       </form>
     </div>
   );
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-
-    switch (name) {
-      case "username":
-        setCreds({ ...creds, username: value });
-        break;
-
-      case "password":
-        setCreds({ ...creds, pwd: value });
-        break;
-    }
-  }
-
-  function submitForm() {
-    props.handleSubmit(creds);
-    setCreds({ username: "", pwd: "" });
-  }
 }
 
 export default Login;

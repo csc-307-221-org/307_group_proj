@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import ReactDOMClient from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import "./main.css";
 
@@ -244,6 +250,18 @@ function HomePage({ token }) {
   );
 }
 
+function AuthPage({ authFunction, buttonLabel }) {
+  const navigate = useNavigate();
+
+  function handleAuth(credentials) {
+    authFunction(credentials).then(() => {
+      navigate("/");
+    });
+  }
+
+  return <Login handleSubmit={handleAuth} buttonLabel={buttonLabel} />;
+}
+
 export default function MyApp() {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || "";
@@ -251,13 +269,28 @@ export default function MyApp() {
 
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    if (!message) return;
+
+    const timer = setTimeout(() => {
+      setMessage("");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [message]);
+
   function saveToken(newToken) {
     setToken(newToken);
     localStorage.setItem("token", newToken);
   }
 
+  function logoutUser() {
+    localStorage.removeItem("token");
+    window.location.reload();
+  }
+
   function loginUser(creds) {
-    fetch(
+    return fetch(
       "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net/login",
       {
         method: "POST",
@@ -308,38 +341,30 @@ export default function MyApp() {
       });
   }
 
-  function testProtectedRoute() {
-    fetch(
-      "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-      .then((response) => response.text())
-      .then((data) => {
-        setMessage(data);
-      })
-      .catch((error) => {
-        setMessage(`Error: ${error}`);
-      });
-  }
-
   return (
     <BrowserRouter>
-      <p style={{ color: "white" }}>{message}</p>
+      <nav className="auth-nav">
+        <Link to="/login" className="auth-button">
+          Login
+        </Link>
 
-      <button onClick={testProtectedRoute}>Test Protected Route</button>
+        {token && (
+          <button className="logout-button" onClick={logoutUser}>
+            Logout
+          </button>
+        )}
+      </nav>
+
+      <p style={{ color: "white" }}>{message}</p>
 
       <Routes>
         <Route path="/" element={<HomePage token={token} />} />
 
-        <Route path="/login" element={<Login handleSubmit={loginUser} />} />
+        <Route path="/login" element={<AuthPage authFunction={loginUser} />} />
 
         <Route
           path="/signup"
-          element={<Login handleSubmit={signupUser} buttonLabel="Sign Up" />}
+          element={<AuthPage authFunction={signupUser} buttonLabel="Sign Up" />}
         />
       </Routes>
     </BrowserRouter>
