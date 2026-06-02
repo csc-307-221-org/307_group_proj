@@ -15,6 +15,19 @@ import Presets from "./Presets.jsx";
 import Login from "./Login.jsx";
 import Items from "./Items.jsx";
 
+function GifPage() {
+  return (
+    <div style={{ color: "white", textAlign: "center", marginTop: "100px" }}>
+      <h1>LEON KENNEDY YES!!!!!!!!!!!!!!!!!!</h1>
+
+      <img
+        src="https://media1.tenor.com/m/MmSvfoqiQEYAAAAd/bbg-leon-leon-kennedy.gif"
+        alt="gif"
+        width="300"
+      />
+    </div>
+  );
+}
 const API_URL =
   "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net";
 
@@ -42,6 +55,29 @@ function HomePage({ token }) {
     );
   }, [rows, cols]);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let typed = "";
+
+    function handleKeyDown(event) {
+      typed += event.key.toLowerCase();
+
+      if (typed.length > 20) {
+        typed = typed.slice(-20);
+      }
+
+      if (typed.includes("leon")) {
+        navigate("/gif/gif");
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [navigate]);
   useEffect(() => {
     async function loadPresetsFromDatabase() {
       if (!token) {
@@ -705,6 +741,7 @@ export default function MyApp() {
           path="/signup"
           element={<AuthPage authFunction={signupUser} buttonLabel="Sign Up" />}
         />
+        <Route path="/gif/:word" element={<GifPage />} />
       </Routes>
     </BrowserRouter>
   );
