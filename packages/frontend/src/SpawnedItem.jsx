@@ -12,7 +12,7 @@ function SpawnedItem({
 }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const [moved, setMoved] = useState(false);
+  const [moved, setMoved] = useState(() => Boolean(item.hasBeenDragged));
 
   const cells = item.cells || [];
 
@@ -23,6 +23,11 @@ function SpawnedItem({
 
   const shapeRows = maxRow - minRow + 1;
   const shapeCols = maxCol - minCol + 1;
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMoved(Boolean(item.hasBeenDragged));
+  }, [item.renderedId, item.hasBeenDragged]);
 
   useEffect(() => {
     function snap() {
