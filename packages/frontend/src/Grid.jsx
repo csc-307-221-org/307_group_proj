@@ -1,7 +1,14 @@
 import { useEffect } from "react";
 import useWindowScale from "./Windowscale.js";
 
-function Grid({ rows, cols, setRows, setCols, placedItems }) {
+function Grid({
+  rows,
+  cols,
+  setRows,
+  setCols,
+  placedItems,
+  totalBackpackWeight,
+}) {
   const safeRows = Number(rows) || 1;
   const safeCols = Number(cols) || 1;
 
@@ -17,6 +24,10 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
   }, [cellSize]);
 
   const items = Array.from({ length: safeRows * safeCols });
+
+  const displayWeight = Number.isInteger(totalBackpackWeight)
+    ? totalBackpackWeight
+    : Number(totalBackpackWeight || 0).toFixed(2);
 
   const handleChange = (e, setter) => {
     let val = e.target.value;
@@ -56,8 +67,8 @@ function Grid({ rows, cols, setRows, setCols, placedItems }) {
         </div>
 
         <div className="top-right">
-          <div>Item Search</div>
-          <input type="text" placeholder="Search..." />
+          <div>Total Backpack Weight</div>
+          <div className="weight-display">{displayWeight}</div>
         </div>
       </div>
 
