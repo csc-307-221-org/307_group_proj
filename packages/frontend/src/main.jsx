@@ -109,6 +109,31 @@ function HomePage({ token }) {
     return a === b;
   }
 
+  function getTotalBackpackWeight(grid) {
+    const countedItems = new Set();
+
+    return grid.reduce((total, row) => {
+      return (
+        total +
+        row.reduce((rowTotal, spot) => {
+          if (!spot?.fullItem) {
+            return rowTotal;
+          }
+
+          const itemKey = getItemInstanceKey(spot.fullItem);
+
+          if (!itemKey || countedItems.has(itemKey)) {
+            return rowTotal;
+          }
+
+          countedItems.add(itemKey);
+
+          return rowTotal + (Number(spot.fullItem.weight) || 0);
+        }, 0)
+      );
+    }, 0);
+  }
+
   function shapeToCells(shape) {
     if (!Array.isArray(shape)) {
       return [];
@@ -538,6 +563,8 @@ function HomePage({ token }) {
     }));
   }
 
+  const totalBackpackWeight = getTotalBackpackWeight(placedItems);
+
   return (
     <div className="app">
       <Presets
@@ -553,6 +580,7 @@ function HomePage({ token }) {
         setRows={setRows}
         setCols={setCols}
         placedItems={placedItems}
+        totalBackpackWeight={totalBackpackWeight}
       />
 
       <Items

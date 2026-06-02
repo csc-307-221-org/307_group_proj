@@ -7,6 +7,7 @@ function Popout({ onClose, onSave }) {
   const [clickedCells, setClickedCells] = useState([]);
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
+  const [itemWeight, setItemWeight] = useState("");
   const [imageData, setImageData] = useState("");
 
   function handleCellClick(row, col) {
@@ -84,12 +85,14 @@ function Popout({ onClose, onSave }) {
   }
 
   function handleSave() {
+    const numericWeight = Number(itemWeight);
+
     const savedItem = {
       name: itemName,
       description: description,
       imageData: imageData,
       tags: [],
-      weight: 0,
+      weight: Number.isFinite(numericWeight) ? Math.max(0, numericWeight) : 0,
       shape: cellsToShape(clickedCells, rows, cols),
     };
 
@@ -109,6 +112,16 @@ function Popout({ onClose, onSave }) {
           placeholder="Item name"
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
+        />
+
+        <input
+          className="weight-input"
+          type="number"
+          min="0"
+          step="0.1"
+          placeholder="Item weight"
+          value={itemWeight}
+          onChange={(e) => setItemWeight(e.target.value)}
         />
         <label className="image-picker-label">
           Choose Image
