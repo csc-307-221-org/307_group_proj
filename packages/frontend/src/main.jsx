@@ -719,9 +719,11 @@ export default function MyApp() {
   return (
     <BrowserRouter>
       <nav className="auth-nav">
-        <Link to="/login" className="auth-button">
-          Login
-        </Link>
+        {!token && (
+          <Link to="/login" className="auth-button">
+            Login
+          </Link>
+        )}
 
         {token && (
           <button className="logout-button" onClick={logoutUser}>
