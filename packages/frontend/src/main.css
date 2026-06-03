@@ -58,6 +58,7 @@ body {
   color: white;
   box-sizing: border-box;
 }
+
 .grid-item-info {
   font-size: 10px;
   text-align: center;
@@ -166,6 +167,7 @@ body {
   position: relative;
   z-index: 10;
 }
+
 .preset-box {
   border: none;
   cursor: pointer;
@@ -232,13 +234,13 @@ body {
 }
 
 .items-top {
-  min-height: clamp(45px, 6vmin, 70px);
+  min-height: clamp(90px, 12vmin, 130px);
   height: auto;
   background: #ddd;
 
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
 
   padding: 1vmin;
@@ -249,7 +251,18 @@ body {
 }
 
 .items-top > span {
+  text-align: center;
   flex: 0 0 auto;
+}
+
+.item-button-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .item-red {
@@ -267,18 +280,32 @@ body {
   font-size: 18px;
 }
 
-.item-select {
-  flex: 1 1 160px;
-  min-width: 130px;
-  max-width: 100%;
-  padding: 7px;
-  border-radius: 6px;
+.edit-item-button {
+  flex: 0 0 auto;
+  width: 80px;
+  height: 36px;
+  background: #4d8df7;
+  color: white;
+  border-radius: var(--roundness);
+  border: 2px solid var(--color-primary);
+  cursor: pointer;
   font-size: 18px;
+}
+
+.edit-item-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.edit-item-button:hover:not(:disabled) {
+  filter: brightness(1.08);
 }
 
 .delete-item-button {
   flex: 0 0 auto;
-  padding: 7px 14px;
+  width: 90px;
+  height: 36px;
+  padding: 0;
   border-radius: 6px;
   cursor: pointer;
   font-size: 18px;
@@ -288,6 +315,16 @@ body {
 .item-select:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+.item-select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 7px;
+  border-radius: 6px;
+  font-size: 18px;
+  box-sizing: border-box;
 }
 
 .item-black {
@@ -316,18 +353,20 @@ body {
   color: var(--color-text-2);
 
   min-height: clamp(220px, 30vmin, 380px);
-  padding: clamp(14px, 2vmin, 28px);
+  padding: 12px;
 
-  border: 1px solid var(--color-primary);
+  border: 1px solid #333;
+
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: flex-start;
-  align-content: flex-start;
-  gap: 16px;
+  gap: 12px;
 
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-sizing: border-box;
+
+  font-size: clamp(16px, 2.2vmin, 28px);
 }
 
 .drop-box-label {
@@ -562,23 +601,6 @@ body {
   border: 1px solid transparent;
 }
 
-/* drop box */
-.drop-box {
-  padding: 12px;
-
-  font-size: clamp(16px, 2.2vmin, 28px);
-
-  border: 1px solid #333;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .drop-box .spawned-shape:not([style*="position: fixed"]) {
   transform: scale(0.6);
   transform-origin: top left;
@@ -643,6 +665,7 @@ body {
  */
 
 .item-red button,
+.edit-item-button,
 .delete-item-button,
 .presets-buttons button,
 .save-item-button {
@@ -654,6 +677,7 @@ body {
 }
 
 .item-red button:hover,
+.edit-item-button:hover:not(:disabled),
 .delete-item-button:hover:not(:disabled),
 .presets-buttons button:hover,
 .save-item-button:hover {
@@ -665,6 +689,7 @@ body {
 }
 
 .item-red button:active,
+.edit-item-button:active:not(:disabled),
 .delete-item-button:active:not(:disabled),
 .presets-buttons button:active,
 .save-item-button:active {
@@ -897,6 +922,7 @@ body {
 
   color: var(--color-accent);
 }
+
 /* image stuff */
 .image-picker-label {
   display: inline-block;
@@ -954,6 +980,7 @@ body {
 .auth-button-primary {
   background: var(--color-primary);
 }
+
 .signup-text {
   color: #333;
   font-size: 0.9rem;
