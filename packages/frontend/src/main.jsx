@@ -6,6 +6,7 @@ import {
   Route,
   Link,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 
 import "./main.css";
@@ -643,6 +644,29 @@ function AuthPage({ authFunction, buttonLabel }) {
   return <Login handleSubmit={handleAuth} buttonLabel={buttonLabel} />;
 }
 
+function AuthNav({ token, logoutUser }) {
+  const location = useLocation();
+
+  const hideLoginButton =
+    location.pathname === "/login" || location.pathname === "/signup";
+
+  return (
+    <nav className="auth-nav">
+      {!token && !hideLoginButton && (
+        <Link to="/login" className="auth-button">
+          Login
+        </Link>
+      )}
+
+      {token && (
+        <button className="logout-button" onClick={logoutUser}>
+          Logout
+        </button>
+      )}
+    </nav>
+  );
+}
+
 export default function MyApp() {
   const [token, setToken] = useState(() => {
     return localStorage.getItem("token") || "";
@@ -718,19 +742,7 @@ export default function MyApp() {
 
   return (
     <BrowserRouter>
-      <nav className="auth-nav">
-        {!token && (
-          <Link to="/login" className="auth-button">
-            Login
-          </Link>
-        )}
-
-        {token && (
-          <button className="logout-button" onClick={logoutUser}>
-            Logout
-          </button>
-        )}
-      </nav>
+      <AuthNav token={token} logoutUser={logoutUser} />
 
       <p style={{ color: "white" }}>{message}</p>
 

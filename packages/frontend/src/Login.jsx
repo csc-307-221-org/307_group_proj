@@ -33,7 +33,14 @@ function Login(props) {
 
   return (
     <>
-      <video className="login-background-video" autoPlay muted loop playsInline>
+      <video
+        className="login-background-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        disablePictureInPicture
+      >
         <source src="/Trimmed.mp4" type="video/mp4" />
       </video>
 
