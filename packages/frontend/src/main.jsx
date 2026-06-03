@@ -730,7 +730,7 @@ export default function MyApp() {
         )}
       </nav>
 
-      <p style={{ color: "white" }}>{message}</p>
+      {message && <p className="auth-message">{message}</p>}
 
       <Routes>
         <Route path="/" element={<HomePage token={token} />} />
