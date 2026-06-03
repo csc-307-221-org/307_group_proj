@@ -8,33 +8,38 @@ function PresetPopout({ onClose, onSave }) {
   }
 
   return (
-    <div className="white-popup-box">
+    <div className="preset-popup-box">
       {/*
         this is kais cool button animation but it looks kind of cluttered here
         */}
-      <button type="button" className="close-popup" onClick={onClose}>
+      {/*
+      <button type="button" className="preset-close-popup" onClick={onClose}>
         ×
       </button>
-
-      <div className="popout-content">
-        <h1>Name Backpack</h1>
+        */}
+      <div className="preset-popout-content">
+        <h2>Name Backpack</h2>
 
         <input
-          className="name-input"
+          className="preset-name-input"
           type="text"
-          placeholder="Preset ${presets.length + 1}"
+          placeholder="Backpack name"
           value={presetName}
           onChange={(e) => setPresetName(e.target.value)}
         />
         <button
           type="button"
-          className="confirm-name-button"
+          className="preset-confirm-name-button"
           onClick={handleSave}
         >
           Save
         </button>
 
-        <button type="button" className="cancel-name-button" onClick={onClose}>
+        <button
+          type="button"
+          className="preset-cancel-name-button"
+          onClick={onClose}
+        >
           Cancel
         </button>
       </div>

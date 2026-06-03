@@ -428,6 +428,28 @@ body {
   transform: scale(1.12);
 }
 
+/* Preset Popout Box */
+
+.preset-popup-box {
+  position: fixed;
+  top: 50%;
+  left: 6vw;
+  transform: translateY(-50%);
+
+  width: 225px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+
+  background: pink;
+  border: 2px solid black;
+  border-radius: 12px;
+  z-index: 99999;
+
+  box-sizing: border-box;
+  padding: 20px;
+}
+
 /* POPOUT ITEM BOX */
 
 .white-popup-box {
@@ -679,7 +701,7 @@ body {
 .item-red button:hover,
 .edit-item-button:hover:not(:disabled),
 .delete-item-button:hover:not(:disabled),
-.presets-buttons button:hover,
+/*.presets-buttons button:hover,*/    /* fabian */
 .save-item-button:hover {
   transform: translateY(-2px);
 
@@ -691,7 +713,7 @@ body {
 .item-red button:active,
 .edit-item-button:active:not(:disabled),
 .delete-item-button:active:not(:disabled),
-.presets-buttons button:active,
+.presets-buttons button:active,     /*fabian- commented out temporarily*/
 .save-item-button:active {
   transform: scale(0.96);
 }
@@ -862,7 +884,7 @@ body {
 }
 
 .preset-box:hover {
-  transform: translateX(4px);
+  /* transform: translateX(4px); */ /*fabian*/
 
   background: #d5d5d5;
 
