@@ -5,21 +5,17 @@ describe("validateBackpackPlacements", () => {
     const backpack = {
       rows: 4,
       cols: 4,
-      items: [
-        {
-          _id: "item1",
-          name: "Handgun",
-          shape: [[1, 1]],
-        },
-      ],
-      placements: [
-        {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-          rotation: 0,
-        },
-      ],
+      items: [{ _id: "item1", name: "Handgun", shape: [[1, 1]] }],
+      placements: [{ backpackItemId: "item1", row: 0, col: 0, rotation: 0 }],
+    };
+
+    expect(validateBackpackPlacements(backpack)).toBe(true);
+  });
+
+  test("returns true when items and placements are missing", () => {
+    const backpack = {
+      rows: 4,
+      cols: 4,
     };
 
     expect(validateBackpackPlacements(backpack)).toBe(true);
@@ -42,12 +38,7 @@ describe("validateBackpackPlacements", () => {
     const backpack = {
       rows: 4,
       cols: 4,
-      items: [
-        {
-          name: "Knife",
-          shape: [[1]],
-        },
-      ],
+      items: [{ name: "Knife", shape: [[1]] }],
       placements: [],
     };
 
@@ -56,24 +47,25 @@ describe("validateBackpackPlacements", () => {
     );
   });
 
+  test("throws an error if a placement is missing backpackItemId", () => {
+    const backpack = {
+      rows: 4,
+      cols: 4,
+      items: [{ _id: "item1", name: "Handgun", shape: [[1]] }],
+      placements: [{ row: 0, col: 0 }],
+    };
+
+    expect(() => validateBackpackPlacements(backpack)).toThrow(
+      "Every placement must have a backpackItemId.",
+    );
+  });
+
   test("throws an error if a placement references a missing item", () => {
     const backpack = {
       rows: 4,
       cols: 4,
-      items: [
-        {
-          _id: "item1",
-          name: "Handgun",
-          shape: [[1]],
-        },
-      ],
-      placements: [
-        {
-          backpackItemId: "item2",
-          row: 0,
-          col: 0,
-        },
-      ],
+      items: [{ _id: "item1", name: "Handgun", shape: [[1]] }],
+      placements: [{ backpackItemId: "item2", row: 0, col: 0 }],
     };
 
     expect(() => validateBackpackPlacements(backpack)).toThrow(
@@ -85,24 +77,10 @@ describe("validateBackpackPlacements", () => {
     const backpack = {
       rows: 4,
       cols: 4,
-      items: [
-        {
-          _id: "item1",
-          name: "Handgun",
-          shape: [[1]],
-        },
-      ],
+      items: [{ _id: "item1", name: "Handgun", shape: [[1]] }],
       placements: [
-        {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-        },
-        {
-          backpackItemId: "item1",
-          row: 1,
-          col: 1,
-        },
+        { backpackItemId: "item1", row: 0, col: 0 },
+        { backpackItemId: "item1", row: 1, col: 1 },
       ],
     };
 
@@ -111,24 +89,25 @@ describe("validateBackpackPlacements", () => {
     );
   });
 
+  test("throws an error if placement row or col is not an integer", () => {
+    const backpack = {
+      rows: 4,
+      cols: 4,
+      items: [{ _id: "item1", name: "Handgun", shape: [[1]] }],
+      placements: [{ backpackItemId: "item1", row: 0.5, col: 0 }],
+    };
+
+    expect(() => validateBackpackPlacements(backpack)).toThrow(
+      "Placement row and col must be integers.",
+    );
+  });
+
   test("throws an error if a placed item is outside the backpack", () => {
     const backpack = {
       rows: 2,
       cols: 2,
-      items: [
-        {
-          _id: "item1",
-          name: "Rifle",
-          shape: [[1, 1, 1]],
-        },
-      ],
-      placements: [
-        {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-        },
-      ],
+      items: [{ _id: "item1", name: "Rifle", shape: [[1, 1, 1]] }],
+      placements: [{ backpackItemId: "item1", row: 0, col: 0 }],
     };
 
     expect(() => validateBackpackPlacements(backpack)).toThrow(
@@ -141,28 +120,12 @@ describe("validateBackpackPlacements", () => {
       rows: 4,
       cols: 4,
       items: [
-        {
-          _id: "item1",
-          name: "Handgun",
-          shape: [[1]],
-        },
-        {
-          _id: "item2",
-          name: "Ammo",
-          shape: [[1]],
-        },
+        { _id: "item1", name: "Handgun", shape: [[1]] },
+        { _id: "item2", name: "Ammo", shape: [[1]] },
       ],
       placements: [
-        {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-        },
-        {
-          backpackItemId: "item2",
-          row: 0,
-          col: 0,
-        },
+        { backpackItemId: "item1", row: 0, col: 0 },
+        { backpackItemId: "item2", row: 0, col: 0 },
       ],
     };
 
@@ -171,7 +134,7 @@ describe("validateBackpackPlacements", () => {
     );
   });
 
-  test("allows valid rotated placements", () => {
+  test("allows valid rotated placement with 90 degrees", () => {
     const backpack = {
       rows: 4,
       cols: 4,
@@ -185,14 +148,47 @@ describe("validateBackpackPlacements", () => {
           ],
         },
       ],
-      placements: [
+      placements: [{ backpackItemId: "item1", row: 0, col: 0, rotation: 90 }],
+    };
+
+    expect(validateBackpackPlacements(backpack)).toBe(true);
+  });
+
+  test("allows valid rotated placement with 180 degrees", () => {
+    const backpack = {
+      rows: 4,
+      cols: 4,
+      items: [
         {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-          rotation: 90,
+          _id: "item1",
+          name: "L Shape",
+          shape: [
+            [1, 0],
+            [1, 1],
+          ],
         },
       ],
+      placements: [{ backpackItemId: "item1", row: 0, col: 0, rotation: 180 }],
+    };
+
+    expect(validateBackpackPlacements(backpack)).toBe(true);
+  });
+
+  test("allows valid rotated placement with 270 degrees", () => {
+    const backpack = {
+      rows: 4,
+      cols: 4,
+      items: [
+        {
+          _id: "item1",
+          name: "L Shape",
+          shape: [
+            [1, 0],
+            [1, 1],
+          ],
+        },
+      ],
+      placements: [{ backpackItemId: "item1", row: 0, col: 0, rotation: 270 }],
     };
 
     expect(validateBackpackPlacements(backpack)).toBe(true);
@@ -202,21 +198,8 @@ describe("validateBackpackPlacements", () => {
     const backpack = {
       rows: 4,
       cols: 4,
-      items: [
-        {
-          _id: "item1",
-          name: "Handgun",
-          shape: [[1]],
-        },
-      ],
-      placements: [
-        {
-          backpackItemId: "item1",
-          row: 0,
-          col: 0,
-          rotation: 45,
-        },
-      ],
+      items: [{ _id: "item1", name: "Handgun", shape: [[1]] }],
+      placements: [{ backpackItemId: "item1", row: 0, col: 0, rotation: 45 }],
     };
 
     expect(() => validateBackpackPlacements(backpack)).toThrow(

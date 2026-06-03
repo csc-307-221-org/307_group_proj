@@ -16,6 +16,12 @@ describe("validateShapeMatrix", () => {
     );
   });
 
+  test("throws an error if matrix rows are empty", () => {
+    expect(() => validateShapeMatrix([[]])).toThrow(
+      "Item shape rows must not be empty.",
+    );
+  });
+
   test("throws an error if rows are not rectangular", () => {
     const shape = [[1, 0], [1]];
 
