@@ -57,9 +57,23 @@ function Popout({ onClose, onSave, itemToEdit }) {
       return;
     }
 
+    const maxBytes = 20 * 1024 * 1024; // keep below backend 25mb JSON limit
+
+    if (file.size > maxBytes) {
+      alert("That image is too large. Please choose an image under 20 MB.");
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = () => {
+      // Important: preserve GIFs directly so animation is not lost.
+      if (file.type === "image/gif") {
+        setImageData(reader.result);
+        return;
+      }
+
+      // Keep your existing compression for non-GIF images.
       const img = new Image();
 
       img.onload = () => {
@@ -144,9 +158,8 @@ function Popout({ onClose, onSave, itemToEdit }) {
         <label className="image-picker-label">
           Choose Image
           <input
-            className="image-picker-input"
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
             onChange={handleImageChange}
           />
         </label>
