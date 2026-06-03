@@ -498,13 +498,14 @@ function HomePage({ token }) {
     };
   }
 
-  async function saveCurrentPreset() {
+  async function saveCurrentPreset(newName) {
     if (!token) {
       alert("Please log in before saving presets.");
       return;
     }
 
-    const presetName = `Preset ${presets.length + 1}`;
+    // const presetName = `Preset ${presets.length + 1}`;
+    const presetName = newName || `Preset ${presets.length + 1}`;
     const backpackPayload = placedItemsToBackpackPayload(presetName);
 
     try {

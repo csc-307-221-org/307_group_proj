@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
+import PresetPopout from "./PresetPopout";
 
 function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
-  function handleSave() {
+  const [showPresetPopout, setShowPresetPopout] = useState(false);
+
+  function handleSaveClick() {
+    setShowPresetPopout(true);
+  }
+
+  function handleSave(presetName) {
     if (onSavePreset) {
-      onSavePreset();
+      onSavePreset(presetName);
     }
+    setShowPresetPopout(false);
   }
 
   function handleDelete(index) {
@@ -16,7 +24,7 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
   return (
     <div className="presets">
       <div className="presets-buttons">
-        <button type="button" onClick={handleSave}>
+        <button type="button" onClick={handleSaveClick}>
           Save
         </button>
 
@@ -52,6 +60,15 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
           ))
         )}
       </div>
+
+      {showPresetPopout && (
+        <PresetPopout
+          onClose={() => {
+            setShowPresetPopout(false);
+          }}
+          onSave={handleSave}
+        />
+      )}
     </div>
   );
 }
