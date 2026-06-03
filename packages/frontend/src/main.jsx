@@ -658,7 +658,7 @@ function AuthNav({ token, logoutUser }) {
         </Link>
       )}
 
-      {token && (
+      {token && !hideLoginButton && (
         <button className="logout-button" onClick={logoutUser}>
           Logout
         </button>
