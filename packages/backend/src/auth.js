@@ -43,13 +43,9 @@ export function loginUser(req, res) {
         .compare(pwd, retrievedUser.hashedPassword)
         .then((matched) => {
           if (matched) {
-            generateAccessToken(retrievedUser)
-              .then((token) => {
-                res.status(200).send({ token: token });
-              })
-              .catch(() => {
-                res.status(401).send("Unauthorized");
-              });
+            generateAccessToken(retrievedUser).then((token) => {
+              res.status(200).send({ token: token });
+            });
           } else {
             res.status(401).send("Unauthorized");
           }
