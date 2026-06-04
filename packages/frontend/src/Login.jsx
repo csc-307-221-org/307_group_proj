@@ -41,10 +41,7 @@ function Login(props) {
         playsInline
         disablePictureInPicture
       >
-        <source
-          src={isSignup ? "/Trimmed2.mp4" : "/Trimmed.mp4"}
-          type="video/mp4"
-        />
+        <source src={props.videoSrc} type="video/mp4" />
       </video>
 
       <div

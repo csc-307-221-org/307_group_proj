@@ -679,7 +679,7 @@ function HomePage({ token }) {
   );
 }
 
-function AuthPage({ authFunction, buttonLabel }) {
+function AuthPage({ authFunction, buttonLabel, videoSrc }) {
   const navigate = useNavigate();
 
   function handleAuth(credentials) {
@@ -688,7 +688,13 @@ function AuthPage({ authFunction, buttonLabel }) {
     });
   }
 
-  return <Login handleSubmit={handleAuth} buttonLabel={buttonLabel} />;
+  return (
+    <Login
+      handleSubmit={handleAuth}
+      buttonLabel={buttonLabel}
+      videoSrc={videoSrc}
+    />
+  );
 }
 
 function AuthNav({ token, logoutUser }) {
@@ -795,12 +801,26 @@ export default function MyApp() {
 
       <Routes>
         <Route path="/" element={<HomePage token={token} />} />
-
-        <Route path="/login" element={<AuthPage authFunction={loginUser} />} />
+        <Route
+          path="/login"
+          element={
+            <AuthPage
+              authFunction={loginUser}
+              buttonLabel="Log In"
+              videoSrc="/Trimmed.mp4"
+            />
+          }
+        />
 
         <Route
           path="/signup"
-          element={<AuthPage authFunction={signupUser} buttonLabel="Sign Up" />}
+          element={
+            <AuthPage
+              authFunction={signupUser}
+              buttonLabel="Sign Up"
+              videoSrc="/Trimmed2.mp4"
+            />
+          }
         />
         <Route path="/gif/:word" element={<GifPage />} />
       </Routes>
