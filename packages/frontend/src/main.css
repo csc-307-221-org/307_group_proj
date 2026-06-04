@@ -293,7 +293,7 @@ body {
   width: 80px;
   height: 36px;
   background: #4d8df7;
-  color: white;
+  color: black;
   border-radius: var(--roundness);
   border: 2px solid var(--color-primary);
   cursor: pointer;
