@@ -1,5 +1,10 @@
 {
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/Trimmed.mp4", "/Trimmed2.mp4", "/favicon.svg", "/icons.svg"]
+  },
+  "mimeTypes": {
+    ".mp4": "video/mp4",
+    ".svg": "image/svg+xml"
   }
 }
