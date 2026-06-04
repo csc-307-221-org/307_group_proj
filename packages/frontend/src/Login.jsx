@@ -32,60 +32,76 @@ function Login(props) {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "100px",
-      }}
-    >
-      <form
+    <>
+      <video
+        className="login-background-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        disablePictureInPicture
+      >
+        <source
+          src={isSignup ? "/Trimmed2.mp4" : "/Trimmed.mp4"}
+          type="video/mp4"
+        />
+      </video>
+
+      <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          backgroundColor: "white",
-          padding: "20px",
-          borderRadius: "8px",
+          justifyContent: "center",
+          marginTop: "100px",
         }}
       >
-        <label htmlFor="username">UserName</label>
+        <form
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            backgroundColor: "white",
+            padding: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          <label htmlFor="username">UserName</label>
 
-        <input
-          type="text"
-          name="username"
-          id="username"
-          value={creds.username}
-          onChange={handleChange}
-        />
+          <input
+            type="text"
+            name="username"
+            id="username"
+            value={creds.username}
+            onChange={handleChange}
+          />
 
-        <label htmlFor="password">Password</label>
+          <label htmlFor="password">Password</label>
 
-        <input
-          type="password"
-          name="password"
-          id="password"
-          value={creds.pwd}
-          onChange={handleChange}
-        />
+          <input
+            type="password"
+            name="password"
+            id="password"
+            value={creds.pwd}
+            onChange={handleChange}
+          />
 
-        <input
-          type="button"
-          value={props.buttonLabel || "Log In"}
-          onClick={submitForm}
-        />
+          <input
+            type="button"
+            value={props.buttonLabel || "Log In"}
+            onClick={submitForm}
+          />
 
-        {isSignup ? (
-          <p className="signup-text">
-            Already have an account? <Link to="/login">Log in</Link>
-          </p>
-        ) : (
-          <p className="signup-text">
-            Don't have an account? <Link to="/signup">Sign up</Link>
-          </p>
-        )}
-      </form>
-    </div>
+          {isSignup ? (
+            <p className="signup-text">
+              Already have an account? <Link to="/login">Log in</Link>
+            </p>
+          ) : (
+            <p className="signup-text">
+              Don't have an account? <Link to="/signup">Sign up</Link>
+            </p>
+          )}
+        </form>
+      </div>
+    </>
   );
 }
 

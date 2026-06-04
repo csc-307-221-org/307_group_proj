@@ -37,9 +37,13 @@ function SpawnedItem({
     snap();
 
     window.addEventListener("resize", snap);
+    window.addEventListener("scroll", snap, true);
+    document.addEventListener("scroll", snap, true);
 
     return () => {
       window.removeEventListener("resize", snap);
+      window.removeEventListener("scroll", snap, true);
+      document.removeEventListener("scroll", snap, true);
     };
   }, [item, placedItems]);
 
