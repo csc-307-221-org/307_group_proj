@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-function PresetPopout({ onClose, onSave }) {
-  const [presetName, setPresetName] = useState("");
+function PresetPopout({ onClose, onSave, presetToEdit }) {
+  const [presetName, setPresetName] = useState(presetToEdit?.presetName || "");
 
   function handleSave() {
     onSave(presetName);
@@ -9,14 +9,6 @@ function PresetPopout({ onClose, onSave }) {
 
   return (
     <div className="preset-popup-box">
-      {/*
-        this is kais cool button animation but it looks kind of cluttered here
-        */}
-      {/*
-      <button type="button" className="preset-close-popup" onClick={onClose}>
-        ×
-      </button>
-        */}
       <div className="preset-popout-content">
         <h2>Name Backpack</h2>
 
@@ -32,7 +24,7 @@ function PresetPopout({ onClose, onSave }) {
           className="preset-confirm-name-button"
           onClick={handleSave}
         >
-          Save
+          {presetToEdit ? "Update" : "Save"}
         </button>
 
         <button

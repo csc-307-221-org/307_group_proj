@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import PresetPopout from "./PresetPopout";
 
-function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
+function Presets({
+  presets = [],
+  onSavePreset,
+  onEditPreset,
+  onDeletePreset,
+  onLoadPreset,
+}) {
   const [showPresetPopout, setShowPresetPopout] = useState(false);
+  const [presetBeingEdited, setPresetBeingEdited] = useState(null);
 
   function handleSaveClick() {
     setShowPresetPopout(true);
@@ -11,6 +18,21 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
   function handleSave(presetName) {
     if (onSavePreset) {
       onSavePreset(presetName);
+    }
+    setShowPresetPopout(false);
+  }
+
+  function handleEditClick() {
+    if (!presetBeingEdited) {
+      alert("Please select a preset to edit.");
+      return;
+    }
+    setShowPresetPopout(true);
+  }
+
+  function handleEdit(presetName, index) {
+    if (onEditPreset) {
+      onEditPreset(presetName, index);
     }
     setShowPresetPopout(false);
   }
@@ -28,7 +50,13 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
           Save
         </button>
 
-        <button type="button">Preset</button>
+        <button
+          type="button"
+          className="edit-preset-button"
+          onClick={handleEditClick}
+        >
+          Edit Preset
+        </button>
       </div>
 
       <div className="presets-title">Presets</div>
@@ -65,8 +93,10 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
         <PresetPopout
           onClose={() => {
             setShowPresetPopout(false);
+            setPresetBeingEdited(null);
           }}
-          onSave={handleSave}
+          onSave={presetBeingEdited ? handleSave : handleEdit}
+          presetToEdit={presetBeingEdited}
         />
       )}
     </div>
