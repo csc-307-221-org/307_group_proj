@@ -4,7 +4,7 @@ body,
   margin: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   --preset-w: clamp(110px, 16vmin, 180px);
   --preset-gap: 8vmin;
 
