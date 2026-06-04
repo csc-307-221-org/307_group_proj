@@ -70,7 +70,6 @@ function Items({
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRenderedItems((currentItems) => {
       const unplacedItems = currentItems.filter((item) => !item.hasBeenDragged);
 

@@ -25,7 +25,6 @@ function SpawnedItem({
   const shapeCols = maxCol - minCol + 1;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMoved(Boolean(item.hasBeenDragged));
   }, [item.renderedId, item.hasBeenDragged]);
 
@@ -272,14 +271,14 @@ function SpawnedItem({
       style={
         moved
           ? {
-            position: "fixed",
-            left: pos.x,
-            top: pos.y,
-            margin: 0,
-            zIndex: 99999,
-            cursor: dragging ? "grabbing" : "grab",
-            transform: "scale(1)",
-          }
+              position: "fixed",
+              left: pos.x,
+              top: pos.y,
+              margin: 0,
+              zIndex: 99999,
+              cursor: dragging ? "grabbing" : "grab",
+              transform: "scale(1)",
+            }
           : undefined
       }
     >
@@ -298,11 +297,12 @@ function SpawnedItem({
 
           const imageStyle = item.imageData
             ? {
-              backgroundImage: `url(${item.imageData})`,
-              backgroundSize: `${shapeCols * 100}% ${shapeRows * 100}%`,
-              backgroundPosition: `${shapeCols === 1 ? 0 : (col / (shapeCols - 1)) * 100
+                backgroundImage: `url(${item.imageData})`,
+                backgroundSize: `${shapeCols * 100}% ${shapeRows * 100}%`,
+                backgroundPosition: `${
+                  shapeCols === 1 ? 0 : (col / (shapeCols - 1)) * 100
                 }% ${shapeRows === 1 ? 0 : (row / (shapeRows - 1)) * 100}%`,
-            }
+              }
             : {};
 
           return (
