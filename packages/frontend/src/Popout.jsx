@@ -1,14 +1,31 @@
 import { useState } from "react";
 
-function Popout({ onClose, onSave }) {
+function Popout({ onClose, onSave, itemToEdit }) {
   const rows = 3;
   const cols = 3;
 
-  const [clickedCells, setClickedCells] = useState([]);
-  const [itemName, setItemName] = useState("");
-  const [description, setDescription] = useState("");
-  const [itemWeight, setItemWeight] = useState("");
-  const [imageData, setImageData] = useState("");
+  function shapeToCells(shape) {
+    if (!Array.isArray(shape)) {
+      return [];
+    }
+
+    return shape.flatMap((rowArray, row) =>
+      rowArray
+        .map((value, col) => (value === 1 ? { row, col } : null))
+        .filter(Boolean),
+    );
+  }
+
+  const [clickedCells, setClickedCells] = useState(
+    itemToEdit ? shapeToCells(itemToEdit.shape) : [],
+  );
+
+  const [itemName, setItemName] = useState(itemToEdit?.name || "");
+  const [description, setDescription] = useState(itemToEdit?.description || "");
+  const [itemWeight, setItemWeight] = useState(
+    itemToEdit?.weight !== undefined ? String(itemToEdit.weight) : "",
+  );
+  const [imageData, setImageData] = useState(itemToEdit?.imageData || "");
 
   function handleCellClick(row, col) {
     const cell = { row: row, col: col };
@@ -40,9 +57,23 @@ function Popout({ onClose, onSave }) {
       return;
     }
 
+    const maxBytes = 20 * 1024 * 1024; // keep below backend 25mb JSON limit
+
+    if (file.size > maxBytes) {
+      alert("That image is too large. Please choose an image under 20 MB.");
+      return;
+    }
+
     const reader = new FileReader();
 
     reader.onload = () => {
+      // Important: preserve GIFs directly so animation is not lost.
+      if (file.type === "image/gif") {
+        setImageData(reader.result);
+        return;
+      }
+
+      // Keep your existing compression for non-GIF images.
       const img = new Image();
 
       img.onload = () => {
@@ -91,7 +122,7 @@ function Popout({ onClose, onSave }) {
       name: itemName,
       description: description,
       imageData: imageData,
-      tags: [],
+      tags: itemToEdit?.tags || [],
       weight: Number.isFinite(numericWeight) ? Math.max(0, numericWeight) : 0,
       shape: cellsToShape(clickedCells, rows, cols),
     };
@@ -123,12 +154,12 @@ function Popout({ onClose, onSave }) {
           value={itemWeight}
           onChange={(e) => setItemWeight(e.target.value)}
         />
+
         <label className="image-picker-label">
           Choose Image
           <input
-            className="image-picker-input"
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
             onChange={handleImageChange}
           />
         </label>
@@ -167,7 +198,7 @@ function Popout({ onClose, onSave }) {
         </div>
 
         <button type="button" className="save-item-button" onClick={handleSave}>
-          Save
+          {itemToEdit ? "Update" : "Save"}
         </button>
       </div>
     </div>

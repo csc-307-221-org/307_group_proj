@@ -14,6 +14,7 @@ function Items({
   const [accountItems, setAccountItems] = useState([]);
   const [renderedItems, setRenderedItems] = useState([]);
   const [selectedItemId, setSelectedItemId] = useState("");
+  const [itemBeingEdited, setItemBeingEdited] = useState(null);
 
   const API_URL =
     "https://backback-organization-221-g4bhdubhhsg3bhd4.westus3-01.azurewebsites.net";
@@ -137,6 +138,69 @@ function Items({
         itemToRenderedItem(createdItem),
       ]);
 
+      setShowWhiteBox(false);
+    } catch (err) {
+      console.error("Could not connect to backend:", err);
+      alert("Could not connect to backend.");
+    }
+  }
+
+  async function handleUpdateItem(updatedItem) {
+    if (!token) {
+      alert("Please log in before editing items.");
+      return;
+    }
+
+    if (!itemBeingEdited) {
+      alert("Please select an item to edit.");
+      return;
+    }
+
+    const itemId = getItemId(itemBeingEdited);
+
+    try {
+      const response = await fetch(`${API_URL}/items/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedItem),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Could not update item:", data);
+        alert(data.error || "Error updating item.");
+        return;
+      }
+
+      const editedItem = itemFromBackendToFrontend(data.item || data);
+
+      const placedCopiesOfEditedItem = renderedItems.filter(
+        (item) => getItemId(item) === itemId && item.hasBeenDragged,
+      );
+
+      placedCopiesOfEditedItem.forEach((item) => {
+        onRemoveItemFromMatrix(item);
+      });
+
+      setAccountItems((currentItems) =>
+        currentItems.map((item) =>
+          getItemId(item) === itemId ? editedItem : item,
+        ),
+      );
+
+      setRenderedItems((currentItems) => [
+        ...currentItems.filter(
+          (item) => getItemId(item) !== itemId && item.hasBeenDragged,
+        ),
+        itemToRenderedItem(editedItem),
+      ]);
+
+      setSelectedItemId(getItemId(editedItem));
+      setItemBeingEdited(null);
       setShowWhiteBox(false);
     } catch (err) {
       console.error("Could not connect to backend:", err);
@@ -282,13 +346,43 @@ function Items({
       <div className="items-top">
         <span>Items</span>
 
-        <div className="item-red">
+        <div className="item-button-row">
+          <div className="item-red">
+            <button
+              title="Press Me"
+              className="item-red"
+              onClick={() => {
+                setItemBeingEdited(null);
+                setShowWhiteBox(true);
+              }}
+            >
+              Add Items
+            </button>
+          </div>
+
           <button
-            title="Press Me"
-            className="item-red"
-            onClick={() => setShowWhiteBox(true)}
+            type="button"
+            className="edit-item-button"
+            onClick={() => {
+              if (!selectedItem) {
+                alert("Please select an item to edit.");
+                return;
+              }
+
+              setItemBeingEdited(selectedItem);
+              setShowWhiteBox(true);
+            }}
+            disabled={!selectedItem}
           >
-            Add Items
+            Edit
+          </button>
+
+          <button
+            className="delete-item-button"
+            onClick={() => handleDeleteItemFromDatabase()}
+            disabled={!selectedItem}
+          >
+            Delete
           </button>
         </div>
 
@@ -308,14 +402,6 @@ function Items({
             </option>
           ))}
         </select>
-
-        <button
-          className="delete-item-button"
-          onClick={() => handleDeleteItemFromDatabase()}
-          disabled={!selectedItem}
-        >
-          Delete
-        </button>
 
         <div className="item-black"></div>
       </div>
@@ -353,8 +439,12 @@ function Items({
 
       {showWhiteBox && (
         <Popout
-          onClose={() => setShowWhiteBox(false)}
-          onSave={handleSaveItem}
+          onClose={() => {
+            setShowWhiteBox(false);
+            setItemBeingEdited(null);
+          }}
+          onSave={itemBeingEdited ? handleUpdateItem : handleSaveItem}
+          itemToEdit={itemBeingEdited}
         />
       )}
     </div>

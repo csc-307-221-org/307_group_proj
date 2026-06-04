@@ -706,7 +706,7 @@ export default function MyApp() {
         if (response.status === 200) {
           response.json().then((payload) => {
             saveToken(payload.token);
-            setMessage("Login successful; auth token saved");
+            setMessage("Login successful: auth token saved");
           });
         } else {
           setMessage("Login failed");
@@ -744,7 +744,7 @@ export default function MyApp() {
     <BrowserRouter>
       <AuthNav token={token} logoutUser={logoutUser} />
 
-      <p style={{ color: "white" }}>{message}</p>
+      {message && <p className="auth-message">{message}</p>}
 
       <Routes>
         <Route path="/" element={<HomePage token={token} />} />
