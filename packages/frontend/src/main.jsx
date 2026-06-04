@@ -48,6 +48,7 @@ function HomePage({ token }) {
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlacedItems((current) =>
       Array.from({ length: rows }, (_, row) =>
         Array.from({ length: cols }, (_, col) => current[row]?.[col] || null),
