@@ -6,6 +6,7 @@ function Login(props) {
     username: "",
     pwd: "",
   });
+  const [videoReady, setVideoReady] = useState(false);
 
   const isSignup = props.buttonLabel === "Sign Up";
 
@@ -35,13 +36,14 @@ function Login(props) {
     <>
       <video
         key={props.videoSrc}
-        className="login-background-video"
+        className={`login-background-video ${videoReady ? "video-ready" : ""}`}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
         disablePictureInPicture
+        onLoadedData={() => setVideoReady(true)}
       >
         <source src={props.videoSrc} type="video/mp4" />
       </video>
