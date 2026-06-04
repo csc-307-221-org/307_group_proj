@@ -25,7 +25,6 @@ function SpawnedItem({
   const shapeCols = maxCol - minCol + 1;
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMoved(Boolean(item.hasBeenDragged));
   }, [item.renderedId, item.hasBeenDragged]);
 
