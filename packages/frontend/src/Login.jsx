@@ -40,6 +40,7 @@ function Login(props) {
         muted
         loop
         playsInline
+        preload="auto"
         disablePictureInPicture
       >
         <source src={props.videoSrc} type="video/mp4" />
