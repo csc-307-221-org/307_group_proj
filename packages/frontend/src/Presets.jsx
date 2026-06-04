@@ -1,10 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
+import PresetPopout from "./PresetPopout";
 
-function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
-  function handleSave() {
+function Presets({
+  presets = [],
+  onSavePreset,
+  onEditPreset,
+  onDeletePreset,
+  onLoadPreset,
+}) {
+  const [showPresetPopout, setShowPresetPopout] = useState(false);
+  const [presetBeingEdited, setPresetBeingEdited] = useState(null);
+
+  function handleSaveClick() {
+    setPresetBeingEdited(null);
+    setShowPresetPopout(true);
+  }
+
+  function handleSave(presetName) {
     if (onSavePreset) {
-      onSavePreset();
+      onSavePreset(presetName);
     }
+    setShowPresetPopout(false);
+  }
+
+  function handleEditClick() {
+    if (!presetBeingEdited) {
+      alert("Please select a preset to edit.");
+      return;
+    }
+    setShowPresetPopout(true);
+  }
+
+  function handleEdit(presetName, index) {
+    if (onEditPreset) {
+      onEditPreset(presetName, index);
+    }
+    setShowPresetPopout(false);
   }
 
   function handleDelete(index) {
@@ -16,11 +47,17 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
   return (
     <div className="presets">
       <div className="presets-buttons">
-        <button type="button" onClick={handleSave}>
+        <button type="button" onClick={handleSaveClick}>
           Save
         </button>
 
-        <button type="button">Preset</button>
+        <button
+          type="button"
+          className="edit-preset-button"
+          onClick={handleEditClick}
+        >
+          Edit Preset
+        </button>
       </div>
 
       <div className="presets-title">Presets</div>
@@ -34,7 +71,10 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
               <button
                 type="button"
                 className="preset-box"
-                onClick={() => onLoadPreset && onLoadPreset(preset)}
+                onClick={() => {
+                  setPresetBeingEdited(preset.name, index);
+                  onLoadPreset && onLoadPreset(preset);
+                }}
               >
                 <div>{preset.name}</div>
                 <div>
@@ -52,6 +92,17 @@ function Presets({ presets = [], onSavePreset, onDeletePreset, onLoadPreset }) {
           ))
         )}
       </div>
+
+      {showPresetPopout && (
+        <PresetPopout
+          onClose={() => {
+            setShowPresetPopout(false);
+            setPresetBeingEdited(null);
+          }}
+          onSave={presetBeingEdited ? handleEdit : handleSave}
+          presetToEdit={presetBeingEdited}
+        />
+      )}
     </div>
   );
 }

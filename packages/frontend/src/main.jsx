@@ -497,13 +497,13 @@ function HomePage({ token }) {
     };
   }
 
-  async function saveCurrentPreset() {
+  async function saveCurrentPreset(newName) {
     if (!token) {
       alert("Please log in before saving presets.");
       return;
     }
 
-    const presetName = `Preset ${presets.length + 1}`;
+    const presetName = newName || `Preset ${presets.length + 1}`;
     const backpackPayload = placedItemsToBackpackPayload(presetName);
 
     try {
@@ -529,6 +529,54 @@ function HomePage({ token }) {
       setPresets((currentPresets) => [...currentPresets, createdPreset]);
     } catch (err) {
       console.error("Could not save preset:", err);
+      alert("Could not connect to backend.");
+    }
+  }
+
+  async function editCurrentPreset(newName, index) {
+    if (!token) {
+      alert("Please log in before saving presets.");
+      return;
+    }
+
+    const preset = presets.at(index);
+    const presetId = preset?._id || preset?.id;
+
+    if (!presetId) {
+      alert("Please select a backpack to edit.");
+      return;
+    }
+
+    const presetName = newName || `Preset ${presets.length + 1}`;
+    const backpackPayload = placedItemsToBackpackPayload(presetName);
+
+    try {
+      const response = await fetch(`${API_URL}/backpack/${presetId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(backpackPayload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Backend rejected preset:", data);
+        alert(data.error || "Error saving preset.");
+        return;
+      }
+
+      const editedPreset = data.backpack || data;
+
+      setPresets((currentPresets) =>
+        currentPresets.map((preset, presetIndex) =>
+          presetIndex === index ? editedPreset : preset,
+        ),
+      );
+    } catch (err) {
+      console.error("Could not edit preset:", err);
       alert("Could not connect to backend.");
     }
   }
@@ -605,6 +653,7 @@ function HomePage({ token }) {
       <Presets
         presets={presets}
         onSavePreset={saveCurrentPreset}
+        onEditPreset={editCurrentPreset}
         onDeletePreset={deleteCurrentPreset}
         onLoadPreset={loadPreset}
       />
