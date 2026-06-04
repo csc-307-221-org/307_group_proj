@@ -34,6 +34,7 @@ function Login(props) {
   return (
     <>
       <video
+        key={props.videoSrc}
         className="login-background-video"
         autoPlay
         muted

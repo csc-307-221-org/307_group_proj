@@ -1273,3 +1273,13 @@ form input[type="button"]:active {
   border-radius: 8px;
   margin: 0;
 }
+/* video element styles */
+.login-background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+}
