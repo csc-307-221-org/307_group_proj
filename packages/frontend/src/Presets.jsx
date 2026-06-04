@@ -12,6 +12,7 @@ function Presets({
   const [presetBeingEdited, setPresetBeingEdited] = useState(null);
 
   function handleSaveClick() {
+    setPresetBeingEdited(null);
     setShowPresetPopout(true);
   }
 
@@ -70,7 +71,10 @@ function Presets({
               <button
                 type="button"
                 className="preset-box"
-                onClick={() => onLoadPreset && onLoadPreset(preset)}
+                onClick={() => {
+                  setPresetBeingEdited(preset.name, index);
+                  onLoadPreset && onLoadPreset(preset);
+                }}
               >
                 <div>{preset.name}</div>
                 <div>
@@ -95,7 +99,7 @@ function Presets({
             setShowPresetPopout(false);
             setPresetBeingEdited(null);
           }}
-          onSave={presetBeingEdited ? handleSave : handleEdit}
+          onSave={presetBeingEdited ? handleEdit : handleSave}
           presetToEdit={presetBeingEdited}
         />
       )}
