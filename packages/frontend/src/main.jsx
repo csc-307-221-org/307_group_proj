@@ -389,9 +389,7 @@ function HomePage({ token }) {
 
         const fullItem = spot.fullItem;
         const cells = fullItem.cells || shapeToCells(fullItem.shape);
-        const shape = Array.isArray(fullItem.shape)
-          ? fullItem.shape
-          : cellsToShape(cells);
+        const shape = cellsToShape(cells);
 
         itemsByKey.set(itemKey, {
           backpackItemId: makeObjectId(),
