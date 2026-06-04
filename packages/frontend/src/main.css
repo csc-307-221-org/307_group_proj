@@ -1089,12 +1089,11 @@ form::before {
   position: absolute;
   inset: 0;
 
-  background:
-    repeating-linear-gradient(
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.03) 3px
-    );
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 3px
+  );
 
   pointer-events: none;
 }
