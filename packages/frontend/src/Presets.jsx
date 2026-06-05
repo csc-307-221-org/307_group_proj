@@ -31,11 +31,12 @@ function Presets({
     setShowPresetPopout(true);
   }
 
-  function handleEdit(presetName, index) {
+  function handleEdit(presetName) {
     if (onEditPreset) {
-      onEditPreset(presetName, index);
+      onEditPreset(presetName, presetBeingEdited.index);
     }
     setShowPresetPopout(false);
+    setPresetBeingEdited(null);
   }
 
   function handleDelete(index) {
@@ -72,7 +73,7 @@ function Presets({
                 type="button"
                 className="preset-box"
                 onClick={() => {
-                  setPresetBeingEdited(preset.name, index);
+                  setPresetBeingEdited({ presetName: preset.name, index });
                   onLoadPreset && onLoadPreset(preset);
                 }}
               >
