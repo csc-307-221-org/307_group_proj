@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Login(props) {
@@ -7,6 +7,7 @@ function Login(props) {
     pwd: "",
   });
   const [videoReady, setVideoReady] = useState(false);
+  const videoRef = useRef(null);
 
   const isSignup = props.buttonLabel === "Sign Up";
 
@@ -32,9 +33,28 @@ function Login(props) {
     setCreds({ username: "", pwd: "" });
   }
 
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || !props.videoSrc) return;
+
+    setVideoReady(false);
+
+    video.load();
+
+    const playPromise = video.play();
+
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.log("Video play failed:", error);
+      });
+    }
+  }, [props.videoSrc]);
+
   return (
     <>
       <video
+        ref={videoRef}
         key={props.videoSrc}
         className={`login-background-video ${videoReady ? "video-ready" : ""}`}
         autoPlay
@@ -44,6 +64,10 @@ function Login(props) {
         preload="auto"
         disablePictureInPicture
         onLoadedData={() => setVideoReady(true)}
+        onError={() => {
+          console.log("Video failed to load:", props.videoSrc);
+          setVideoReady(false);
+        }}
       >
         <source src={props.videoSrc} type="video/mp4" />
       </video>
