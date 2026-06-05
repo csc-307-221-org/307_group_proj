@@ -1282,4 +1282,5 @@ form input[type="button"]:active {
   height: 100vh;
   object-fit: cover;
   z-index: -1;
+  background-color: black;
 }
