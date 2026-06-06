@@ -45,7 +45,7 @@ Create .vscode/settings.json in the root with the contents
 
 ## UML Class Diagram
 
-(uml-diagram.jpg)
+!(./uml-diagram.jpg)
 
 ## Access Control Sequence Diagrams
 
