@@ -42,6 +42,11 @@ Create .vscode/settings.json in the root with the contents
   ]
 }
 ```
+
+## UML Class Diagram
+
+(uml-diagram.jpg)
+
 ## Access Control Sequence Diagrams
 
 ### Sign-Up Flow
