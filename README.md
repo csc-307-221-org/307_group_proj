@@ -1,3 +1,7 @@
+### Backpack Organizer
+
+This project is a visual backpack organizer based on the inventory management system of Resident Evil 4. Users log in and create items in their account, which they can then put into their "backpack" grid. Users can save a backpack as a "preset", which they can access and edit.
+
 ### Project Structure
 
 - `packages/frontend`: React frontend
