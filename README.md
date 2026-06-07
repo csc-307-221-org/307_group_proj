@@ -73,7 +73,7 @@ From the backend folder:
 npm run dev
 ```
 
-The backend should start on the port listed in the `.env` file.
+The backend should start on the port 8000
 
 ### 5. Run the Frontend
 
