@@ -61,7 +61,6 @@ Add the required backend environment variables:
 ```env
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-PORT=3000
 ```
 
 Replace `your_mongodb_connection_string` and `your_jwt_secret` with your actual local development values.
